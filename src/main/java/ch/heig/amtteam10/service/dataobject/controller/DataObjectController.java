@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class DataObjectController {
     @GetMapping("/")
     public String index() {
-        return "Greetings from Spring Boot!";
+        return "This is the DataObject controller !";
     }
 }
