@@ -1,13 +1,30 @@
 package ch.heig.amtteam10.service.dataobject.controller;
 
 import ch.heig.amtteam10.core.cloud.AWSClient;
+import ch.heig.amtteam10.service.dataobject.service.storage.StorageNotFoundException;
+import ch.heig.amtteam10.service.dataobject.service.storage.StorageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 
 @RestController
 public class DataObjectController {
+    private final StorageService storageService;
+
+    Logger logger = LoggerFactory.getLogger(DataObjectController.class);
+
+    @Autowired
+    public DataObjectController(StorageService storageService) {
+        this.storageService = storageService;
+    }
+
     @GetMapping("/object/{objectName}")
     public ResponseEntity<Resource> index(@PathVariable String objectName) {
         if (objectName.isEmpty()) {
@@ -27,9 +44,27 @@ public class DataObjectController {
     }
 
     @PostMapping("/object/{objectName}")
-    public ResponseEntity<Resource> create(@PathVariable String objectName) {
+    public ResponseEntity<Resource> create(@PathVariable String objectName, @RequestParam("file") MultipartFile file) {
+        logger.error(file.getOriginalFilename());
+        try {
+            storageService.store(file, objectName);
+            var objectFile = storageService.loadAsResource(objectName);
+            AWSClient.getInstance().dataObject().create(objectName, (File) objectFile);
 
-        // AWSClient.getInstance().dataObject().create(objectName, );
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
+    // TODO: PATCH object/:objectName
+
+    // TODO: DELETE object/:objectName
+
+    // TODO: GET object/:objectName/publish
+
+    @ExceptionHandler(StorageNotFoundException.class)
+    public ResponseEntity<?> handleStorageFileNotFound(StorageNotFoundException e) {
+        return ResponseEntity.notFound().build();
     }
 }
