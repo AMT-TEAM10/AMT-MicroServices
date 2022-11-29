@@ -1,5 +1,7 @@
 package ch.heig.amtteam10.core.cloud;
 
+import ch.heig.amtteam10.core.exceptions.FailDownloadFileException;
+
 import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -20,7 +22,7 @@ public interface ILabelDetector {
      * @return An array of labels
      * @throws IOException If the image cannot be downloaded
      */
-    Label[] execute(String imageUri, int maxLabels, float minConfidence) throws IOException;
+    Label[] execute(String imageUri, int maxLabels, float minConfidence) throws IOException, FailDownloadFileException;
 
     /**
      * Execute Rekognition analysis on image
@@ -31,7 +33,7 @@ public interface ILabelDetector {
      * @return An array of labels
      * @throws IOException If the image cannot be downloaded
      */
-    Label[] execute(URL imageUri, int maxLabels, float minConfidence) throws IOException;
+    Label[] execute(URL imageUri, int maxLabels, float minConfidence) throws IOException, FailDownloadFileException;
 
     /**
      * Execute Rekognition analysis on image

@@ -1,5 +1,6 @@
 package ch.heig.amtteam10.core.cloud;
 
+import ch.heig.amtteam10.core.exceptions.FailDownloadFileException;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.rekognition.model.DetectLabelsRequest;
 import software.amazon.awssdk.services.rekognition.model.DetectLabelsResponse;
@@ -8,6 +9,7 @@ import software.amazon.awssdk.services.rekognition.model.Image;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 
@@ -19,13 +21,13 @@ import java.nio.ByteBuffer;
  */
 public class AWSLabelDetectorHelper implements ILabelDetector {
     @Override
-    public Label[] execute(String imageUri, int maxLabels, float minConfidence) throws IOException {
+    public Label[] execute(String imageUri, int maxLabels, float minConfidence) throws FailDownloadFileException {
         SdkBytes sourceBytes = SdkBytes.fromInputStream(downloadImage(imageUri));
         return getLabels(sourceBytes, maxLabels, minConfidence);
     }
 
     @Override
-    public Label[] execute(URL imageUri, int maxLabels, float minConfidence) throws IOException {
+    public Label[] execute(URL imageUri, int maxLabels, float minConfidence) throws FailDownloadFileException {
         return execute(imageUri.toString(), maxLabels, minConfidence);
     }
 
@@ -35,9 +37,15 @@ public class AWSLabelDetectorHelper implements ILabelDetector {
         return getLabels(sourceBytes, maxLabels, minConfidence);
     }
 
-    private InputStream downloadImage(String imageUri) throws IOException {
-        URL url = new URL(imageUri);
-        return new BufferedInputStream(url.openStream());
+    private InputStream downloadImage(String imageUri) throws FailDownloadFileException {
+        try {
+            URL url = new URL(imageUri);
+            return new BufferedInputStream(url.openStream());
+        } catch (MalformedURLException e) {
+            throw new FailDownloadFileException("Failed to download file, because url is malformed");
+        } catch (IOException e) {
+            throw new FailDownloadFileException("Failed to download file, cannot open url");
+        }
     }
 
     private Label[] getLabels(SdkBytes sourceBytes, int maxLabels, float minConfidence) {
