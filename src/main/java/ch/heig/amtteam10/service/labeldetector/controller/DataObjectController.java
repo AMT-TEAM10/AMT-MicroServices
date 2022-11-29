@@ -1,4 +1,4 @@
-package ch.heig.amtteam10.microservices.controller;
+package ch.heig.amtteam10.service.labeldetector.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
