@@ -19,7 +19,7 @@ public class LabelDetectorController {
     @PostMapping("/process")
     public @ResponseBody ResponseEntity<Label[]> processImage(@RequestBody ProcessDAO tmp) {
         try {
-            var labels = AWSClient.getInstance().labelDetector().execute(tmp.imageUrl, tmp.maxLabels, tmp.minConfidence);
+            var labels = AWSClient.getInstance().labelDetector().execute(tmp.imageUrl(), tmp.maxLabels(), tmp.minConfidence());
             return ResponseEntity.ok(labels);
         }
         catch (FailDownloadFileException e){
