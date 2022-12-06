@@ -1,6 +1,7 @@
 package ch.heig.amtteam10.service.dataobject;
 
 import ch.heig.amtteam10.core.cloud.AWSClient;
+import ch.heig.amtteam10.core.cloud.AWSDataObjectHelper;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,8 @@ class DataObjectApplicationTests {
     private static final String OUTPUT_FILE_NAME = "output.jpeg";
 
     private static AWSClient client;
+
+    private final static ClassLoader classLoader = AWSDataObjectHelper.class.getClassLoader();
 
     @BeforeAll
     public static void init() {
@@ -62,7 +65,7 @@ class DataObjectApplicationTests {
     @Test
     public void shouldCreateObject() throws IOException {
         // Given a local file
-        File originFile = new File(TEST_FILE_1_NAME);
+        File originFile = new File(classLoader.getResource(TEST_FILE_1_NAME).getFile());
         client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, originFile);
 
         // When I create an object on the object storage
@@ -78,11 +81,11 @@ class DataObjectApplicationTests {
     @Test
     public void shouldUpdateObject() throws IOException {
         // Given two files
-        client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, new File(TEST_FILE_1_NAME));
-        client.dataObject().update(OBJECT_CAN_BE_CREATED_KEY, new File(TEST_FILE_2_NAME));
+        client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, new File(classLoader.getResource(TEST_FILE_1_NAME).getFile()));
+        client.dataObject().update(OBJECT_CAN_BE_CREATED_KEY, new File(classLoader.getResource(TEST_FILE_2_NAME).getFile()));
 
         // When I create a fist first file, then want to replace it by another file
-        File originFile = new File(TEST_FILE_1_NAME);
+        File originFile = new File(classLoader.getResource(TEST_FILE_1_NAME).getFile());
         client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, originFile);
         File outputFile = new File(OUTPUT_FILE_NAME);
         FileOutputStream outputStream = new FileOutputStream(outputFile);
