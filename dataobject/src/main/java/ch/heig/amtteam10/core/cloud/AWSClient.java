@@ -1,4 +1,4 @@
-package ch.heig.amtteam10.labeldetector.core;
+package ch.heig.amtteam10.core.cloud;
 
 import ch.heig.amtteam10.core.Env;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -13,12 +13,11 @@ import software.amazon.awssdk.services.s3.S3Client;
  * @author Nicolas Crausaz
  * @author Maxime Scharwath
  */
-public class AWSClient {
-    private static AWSClient instance;
+public class AWSClient implements ICloudClient {
     private final AWSDataObjectHelper dataObjectHelper;
+    private static AWSClient instance;
     private final Region region;
     private final S3Client s3Client;
-
     private final AwsCredentialsProvider credentialsProvider;
 
     private AWSClient() {
@@ -34,6 +33,7 @@ public class AWSClient {
         return instance;
     }
 
+    @Override
     public AWSDataObjectHelper dataObject() {
         return dataObjectHelper;
     }

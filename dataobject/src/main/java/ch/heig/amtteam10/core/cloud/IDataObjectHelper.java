@@ -1,4 +1,4 @@
-package ch.heig.amtteam10.labeldetector.core;
+package ch.heig.amtteam10.core.cloud;
 
 import java.io.File;
 

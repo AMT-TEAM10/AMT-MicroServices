@@ -1,4 +1,4 @@
-package ch.heig.amtteam10.labeldetector.core;
+package ch.heig.amtteam10.core.cloud;
 
 import ch.heig.amtteam10.core.Env;
 import software.amazon.awssdk.core.ResponseBytes;

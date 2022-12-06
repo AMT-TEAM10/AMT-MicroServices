@@ -22,6 +22,8 @@ class DataObjectApplicationTests {
     private static final String OBJECT_CAN_BE_CREATED_KEY = "objectCanBeCreated";
     private static final String TEST_FILE_1_NAME = "main.jpeg";
     private static final String TEST_FILE_2_NAME = "test.png";
+    private static final String OUTPUT_FILE_NAME = "output.jpeg";
+
     private static AWSClient client;
 
     @BeforeAll
@@ -31,7 +33,7 @@ class DataObjectApplicationTests {
 
     @AfterAll
     static void cleanup() {
-        final File toDelete = new File("outputFile.jpg");
+        final File toDelete = new File(OUTPUT_FILE_NAME);
         if (toDelete.exists()) {
             toDelete.delete();
         }
@@ -64,7 +66,7 @@ class DataObjectApplicationTests {
         client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, originFile);
 
         // When I create an object on the object storage
-        File outputFile = new File("outputFile.jpg");
+        File outputFile = new File(OUTPUT_FILE_NAME);
         FileOutputStream outputStream = new FileOutputStream(outputFile);
         outputStream.write(client.dataObject().get(OBJECT_CAN_BE_CREATED_KEY));
         outputStream.close();
@@ -82,7 +84,7 @@ class DataObjectApplicationTests {
         // When I create a fist first file, then want to replace it by another file
         File originFile = new File(TEST_FILE_1_NAME);
         client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, originFile);
-        File outputFile = new File("outputFile.jpg");
+        File outputFile = new File(OUTPUT_FILE_NAME);
         FileOutputStream outputStream = new FileOutputStream(outputFile);
         outputStream.write(client.dataObject().get(OBJECT_CAN_BE_CREATED_KEY));
         outputStream.close();
