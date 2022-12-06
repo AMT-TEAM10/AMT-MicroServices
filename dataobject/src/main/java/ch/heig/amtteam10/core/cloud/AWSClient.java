@@ -14,9 +14,8 @@ import software.amazon.awssdk.services.s3.S3Client;
  * @author Nicolas Crausaz
  * @author Maxime Scharwath
  */
-public class AWSClient implements ICloudClient {
+public class AWSClient {
     private final AWSDataObjectHelper dataObjectHelper;
-    private final AWSLabelDetectorHelper labelDetectorHelper;
     private static AWSClient instance;
     private final Region region;
     private final S3Client s3Client;
@@ -30,7 +29,6 @@ public class AWSClient implements ICloudClient {
         this.s3Client = S3Client.builder().region(region).credentialsProvider(this.getCredentials()).build();
         this.rekognitionClient = RekognitionClient.builder().credentialsProvider(this.getCredentials()).region(this.getRegion()).build();
         dataObjectHelper = new AWSDataObjectHelper();
-        labelDetectorHelper = new AWSLabelDetectorHelper();
     }
 
     public static AWSClient getInstance() {
@@ -39,14 +37,8 @@ public class AWSClient implements ICloudClient {
         return instance;
     }
 
-    @Override
     public AWSDataObjectHelper dataObject() {
         return dataObjectHelper;
-    }
-
-    @Override
-    public AWSLabelDetectorHelper labelDetector() {
-        return labelDetectorHelper;
     }
 
     S3Client getS3Client() {
