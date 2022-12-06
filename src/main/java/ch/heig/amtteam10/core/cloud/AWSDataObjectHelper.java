@@ -90,6 +90,10 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
 
     @Override
     public String publish(String objectName) {
+        if (!objectExists(objectName)) {
+            throw new RuntimeException("Object not found");
+        }
+
         S3Presigner presigner = S3Presigner.builder()
                 .credentialsProvider(AWSClient.getInstance().getCredentials())
                 .build();

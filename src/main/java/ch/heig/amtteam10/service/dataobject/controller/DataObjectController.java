@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.nio.file.Path;
 
 @RestController
 public class DataObjectController {
@@ -48,8 +49,9 @@ public class DataObjectController {
         logger.error(file.getOriginalFilename());
         try {
             storageService.store(file, objectName);
-            var objectFile = storageService.loadAsResource(objectName);
-            AWSClient.getInstance().dataObject().create(objectName, (File) objectFile);
+            Path filepath = storageService.load(objectName);
+            File objectFile = new File(filepath.toUri());
+            AWSClient.getInstance().dataObject().create(objectName, objectFile);
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -58,10 +60,27 @@ public class DataObjectController {
     }
 
     // TODO: PATCH object/:objectName
+    @PatchMapping("/object/{objectName}")
+    public ResponseEntity<Resource> update(@PathVariable String objectName, @RequestParam("file") MultipartFile file) {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     // TODO: DELETE object/:objectName
+    @DeleteMapping("/object/{objectName}")
+    public ResponseEntity<Resource> delete(@PathVariable String objectName, @RequestParam("file") MultipartFile file) {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
-    // TODO: GET object/:objectName/publish
+    @GetMapping("/object/{objectName}/publish")
+    public ResponseEntity<?> publish(@PathVariable String objectName) {
+        String url;
+        try {
+            url = AWSClient.getInstance().dataObject().publish(objectName);
+        } catch(RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity.ok().body(url);
+    }
 
     @ExceptionHandler(StorageNotFoundException.class)
     public ResponseEntity<?> handleStorageFileNotFound(StorageNotFoundException e) {

@@ -1,8 +1,5 @@
 package ch.heig.amtteam10.service.dataobject.service.storage;
 
-import ch.heig.amtteam10.service.dataobject.controller.DataObjectController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -55,7 +52,7 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public Path load(String filename) {
-        return (Path) loadAsResource(filename);
+        return root.resolve(filename);
     }
 
     @Override
