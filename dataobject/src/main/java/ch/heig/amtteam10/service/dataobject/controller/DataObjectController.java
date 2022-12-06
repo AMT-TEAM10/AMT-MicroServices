@@ -1,6 +1,6 @@
 package ch.heig.amtteam10.service.dataobject.controller;
 
-import ch.heig.amtteam10.core.cloud.AWSClient;
+import ch.heig.amtteam10.labeldetector.core.AWSClient;
 import ch.heig.amtteam10.service.dataobject.service.storage.StorageNotFoundException;
 import ch.heig.amtteam10.service.dataobject.service.storage.StorageService;
 import org.slf4j.Logger;
