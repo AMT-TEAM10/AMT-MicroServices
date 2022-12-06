@@ -8,15 +8,15 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class DataObjectApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(DataObjectApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(DataObjectApplication.class, args);
+    }
 
-	@Bean
-	CommandLineRunner init(StorageService storageService) {
-		return (args) -> {
-			storageService.deleteAll();
-			storageService.init();
-		};
-	}
+    @Bean
+    CommandLineRunner init(StorageService storageService) {
+        return (args) -> {
+            storageService.deleteAll();
+            storageService.init();
+        };
+    }
 }

@@ -5,7 +5,6 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.rekognition.RekognitionClient;
 import software.amazon.awssdk.services.s3.S3Client;
 
 /**
@@ -15,19 +14,17 @@ import software.amazon.awssdk.services.s3.S3Client;
  * @author Maxime Scharwath
  */
 public class AWSClient {
-    private final AWSDataObjectHelper dataObjectHelper;
     private static AWSClient instance;
+    private final AWSDataObjectHelper dataObjectHelper;
     private final Region region;
     private final S3Client s3Client;
 
-    private final RekognitionClient rekognitionClient;
     private final AwsCredentialsProvider credentialsProvider;
 
     private AWSClient() {
         this.region = Region.of(Env.get("AWS_REGION"));
         this.credentialsProvider = StaticCredentialsProvider.create(AwsBasicCredentials.create(Env.get("AWS_ACCESS_KEY_ID"), Env.get("AWS_SECRET_ACCESS_KEY")));
         this.s3Client = S3Client.builder().region(region).credentialsProvider(this.getCredentials()).build();
-        this.rekognitionClient = RekognitionClient.builder().credentialsProvider(this.getCredentials()).region(this.getRegion()).build();
         dataObjectHelper = new AWSDataObjectHelper();
     }
 
@@ -43,10 +40,6 @@ public class AWSClient {
 
     S3Client getS3Client() {
         return s3Client;
-    }
-
-    RekognitionClient getRekognitionClient() {
-        return rekognitionClient;
     }
 
     Region getRegion() {

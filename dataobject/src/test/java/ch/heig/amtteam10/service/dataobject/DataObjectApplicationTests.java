@@ -18,106 +18,106 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class DataObjectApplicationTests {
-	private static AWSClient client;
-	private static final String EXISTING_OBJECT_KEY = "existingObject";
-	private static final String OBJECT_CAN_BE_CREATED_KEY = "objectCanBeCreated";
-	private static final String TEST_FILE_1_NAME = "main.jpeg";
-	private static final String TEST_FILE_2_NAME = "test.png";
+    private static final String EXISTING_OBJECT_KEY = "existingObject";
+    private static final String OBJECT_CAN_BE_CREATED_KEY = "objectCanBeCreated";
+    private static final String TEST_FILE_1_NAME = "main.jpeg";
+    private static final String TEST_FILE_2_NAME = "test.png";
+    private static AWSClient client;
 
-	@BeforeAll
-	public static void init() {
-		client = AWSClient.getInstance();
-	}
+    @BeforeAll
+    public static void init() {
+        client = AWSClient.getInstance();
+    }
 
-	@BeforeEach
-	public void setup() {
-		if (!client.dataObject().objectExists(EXISTING_OBJECT_KEY)) {
-			client.dataObject().create(EXISTING_OBJECT_KEY, "existingObject");
-		}
-		if (client.dataObject().objectExists(OBJECT_CAN_BE_CREATED_KEY)) {
-			client.dataObject().delete(OBJECT_CAN_BE_CREATED_KEY);
-		}
-	}
+    @AfterAll
+    static void cleanup() {
+        final File toDelete = new File("outputFile.jpg");
+        if (toDelete.exists()) {
+            toDelete.delete();
+        }
+    }
 
-	@Test
-	public void shouldVerifyIfObjectExist() {
-		assertTrue(client.dataObject().objectExists(EXISTING_OBJECT_KEY));
-	}
+    @BeforeEach
+    public void setup() {
+        if (!client.dataObject().objectExists(EXISTING_OBJECT_KEY)) {
+            client.dataObject().create(EXISTING_OBJECT_KEY, "existingObject");
+        }
+        if (client.dataObject().objectExists(OBJECT_CAN_BE_CREATED_KEY)) {
+            client.dataObject().delete(OBJECT_CAN_BE_CREATED_KEY);
+        }
+    }
 
-	@Test
-	public void shouldVerifyIfObjectDoesNotExist() {
-		assertFalse(client.dataObject().objectExists("thisObjectDoesNotExist"));
-	}
+    @Test
+    public void shouldVerifyIfObjectExist() {
+        assertTrue(client.dataObject().objectExists(EXISTING_OBJECT_KEY));
+    }
 
-	@Test
-	public void shouldCreateObject() throws IOException {
-		// Given a local file
-		File originFile = new File(TEST_FILE_1_NAME);
-		client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, originFile);
+    @Test
+    public void shouldVerifyIfObjectDoesNotExist() {
+        assertFalse(client.dataObject().objectExists("thisObjectDoesNotExist"));
+    }
 
-		// When I create an object on the object storage
-		File outputFile = new File("outputFile.jpg");
-		FileOutputStream outputStream = new FileOutputStream(outputFile);
-		outputStream.write(client.dataObject().get(OBJECT_CAN_BE_CREATED_KEY));
-		outputStream.close();
+    @Test
+    public void shouldCreateObject() throws IOException {
+        // Given a local file
+        File originFile = new File(TEST_FILE_1_NAME);
+        client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, originFile);
 
-		// Then it should have the same content if I compare the files
-		assertEquals(Files.mismatch(originFile.toPath(), outputFile.toPath()), -1L);
-	}
+        // When I create an object on the object storage
+        File outputFile = new File("outputFile.jpg");
+        FileOutputStream outputStream = new FileOutputStream(outputFile);
+        outputStream.write(client.dataObject().get(OBJECT_CAN_BE_CREATED_KEY));
+        outputStream.close();
 
-	@Test
-	public void shouldUpdateObject() throws IOException {
-		// Given two files
-		client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, new File(TEST_FILE_1_NAME));
-		client.dataObject().update(OBJECT_CAN_BE_CREATED_KEY, new File(TEST_FILE_2_NAME));
+        // Then it should have the same content if I compare the files
+        assertEquals(Files.mismatch(originFile.toPath(), outputFile.toPath()), -1L);
+    }
 
-		// When I create a fist first file, then want to replace it by another file
-		File originFile = new File(TEST_FILE_1_NAME);
-		client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, originFile);
-		File outputFile = new File("outputFile.jpg");
-		FileOutputStream outputStream = new FileOutputStream(outputFile);
-		outputStream.write(client.dataObject().get(OBJECT_CAN_BE_CREATED_KEY));
-		outputStream.close();
+    @Test
+    public void shouldUpdateObject() throws IOException {
+        // Given two files
+        client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, new File(TEST_FILE_1_NAME));
+        client.dataObject().update(OBJECT_CAN_BE_CREATED_KEY, new File(TEST_FILE_2_NAME));
 
-		// Then the file should be the same as the second file's content
-		assertEquals(Files.mismatch(originFile.toPath(), outputFile.toPath()), -1L);
-	}
+        // When I create a fist first file, then want to replace it by another file
+        File originFile = new File(TEST_FILE_1_NAME);
+        client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, originFile);
+        File outputFile = new File("outputFile.jpg");
+        FileOutputStream outputStream = new FileOutputStream(outputFile);
+        outputStream.write(client.dataObject().get(OBJECT_CAN_BE_CREATED_KEY));
+        outputStream.close();
 
-	@Test
-	public void shouldDeleteObject() {
-		// Given having an existing object
-		// When I want to delete it
-		client.dataObject().delete(EXISTING_OBJECT_KEY);
+        // Then the file should be the same as the second file's content
+        assertEquals(Files.mismatch(originFile.toPath(), outputFile.toPath()), -1L);
+    }
 
-		// Then it should be deleted
-		assertThrows(RuntimeException.class, () -> client.dataObject().get(OBJECT_CAN_BE_CREATED_KEY));
-	}
+    @Test
+    public void shouldDeleteObject() {
+        // Given having an existing object
+        // When I want to delete it
+        client.dataObject().delete(EXISTING_OBJECT_KEY);
 
-	@Test
-	public void shouldThrowWhenDeleteInexistantObject() {
-		// Given having a non-existing object
-		// When I try to delete it
-		// Then it should throw an exception
-		assertThrows(RuntimeException.class, () -> client.dataObject().delete("thisObjectDoesNotExist.jpg"));
-	}
+        // Then it should be deleted
+        assertThrows(RuntimeException.class, () -> client.dataObject().get(OBJECT_CAN_BE_CREATED_KEY));
+    }
 
-	@Test
-	public void shouldGetAnUrlWithPublish() throws IOException {
-		// Given an existing object
-		// When I want to publish it
-		// Then I should get a private link to the object
-		URL url = new URL(client.dataObject().publish(EXISTING_OBJECT_KEY));
-		HttpURLConnection con = (HttpURLConnection) url.openConnection();
-		con.setRequestMethod("GET");
-		assertEquals(con.getResponseCode(), 200);
-	}
+    @Test
+    public void shouldThrowWhenDeleteInexistantObject() {
+        // Given having a non-existing object
+        // When I try to delete it
+        // Then it should throw an exception
+        assertThrows(RuntimeException.class, () -> client.dataObject().delete("thisObjectDoesNotExist.jpg"));
+    }
 
-	@AfterAll
-	static void cleanup() {
-		final File toDelete = new File("outputFile.jpg");
-		if (toDelete.exists()) {
-			toDelete.delete();
-		}
-	}
+    @Test
+    public void shouldGetAnUrlWithPublish() throws IOException {
+        // Given an existing object
+        // When I want to publish it
+        // Then I should get a private link to the object
+        URL url = new URL(client.dataObject().publish(EXISTING_OBJECT_KEY));
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        assertEquals(con.getResponseCode(), 200);
+    }
 
 }
