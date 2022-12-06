@@ -1,15 +1,15 @@
 name: "Deploy DataObject"
 on:
   workflow_run:
-    workflows: ["Test DataObject"]
+    workflows: [Test DataObject]
     types:
       - completed
     branches:
       - main
 jobs:
-  if: ${{ github.event.workflow_run.conclusion == 'success' }}
   build:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       -
         name: Checkout

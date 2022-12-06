@@ -1,15 +1,15 @@
 name: "Deploy LabelDetector"
 on:
   workflow_run:
-    workflows: ["Test LabelDetector"]
+    workflows: [Test LabelDetector]
     types:
       - completed
     branches:
       - main
 jobs:
-  if: ${{ github.event.workflow_run.conclusion == 'success' }}
   build:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       -
         name: Checkout
