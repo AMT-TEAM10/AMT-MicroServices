@@ -19,8 +19,7 @@ public class LabelDetectorController {
         try {
             var labels = AWSClient.getInstance().labelDetector().execute(tmp.imageUrl(), tmp.maxLabels(), tmp.minConfidence());
             return ResponseEntity.ok(labels);
-        }
-        catch (FailDownloadFileException e){
+        } catch (FailDownloadFileException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }

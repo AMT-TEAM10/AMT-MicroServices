@@ -9,6 +9,7 @@ package ch.heig.amtteam10.labeldetector.core;
 public interface ICloudClient {
     /**
      * Return an IDataObjectHelper that allows operations to object storage functionalities
+     *
      * @return ILabelDetector
      * @see ILabelDetector
      */
