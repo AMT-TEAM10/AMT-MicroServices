@@ -15,6 +15,13 @@ import java.io.IOException;
  * @author Maxime Scharwath
  */
 public record Label(String name, float confidence) {
+    public static String toJSONArray(Label[] labels) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.writeValue(out, labels);
+        return out.toString();
+    }
+
     @Override
     public String toString() {
         return String.format("%s (%.2f%%)", name, confidence * 100);
@@ -23,12 +30,5 @@ public record Label(String name, float confidence) {
     public String toJSON() throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(this);
-    }
-
-    public static String toJSONArray(Label[] labels) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(out, labels);
-        return out.toString();
     }
 }

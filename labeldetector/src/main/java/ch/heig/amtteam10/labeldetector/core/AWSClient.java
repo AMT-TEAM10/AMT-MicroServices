@@ -14,8 +14,8 @@ import software.amazon.awssdk.services.rekognition.RekognitionClient;
  * @author Maxime Scharwath
  */
 public class AWSClient implements ICloudClient {
-    private final AWSLabelDetectorHelper labelDetectorHelper;
     private static AWSClient instance;
+    private final AWSLabelDetectorHelper labelDetectorHelper;
     private final Region region;
     private final RekognitionClient rekognitionClient;
     private final AwsCredentialsProvider credentialsProvider;
