@@ -11,11 +11,11 @@ import java.io.File;
 public interface IDataObjectHelper {
 
     /**
-     * Create bucket with unique name
+     * Create root object with unique name
      *
-     * @param bucketName bucket unique name,
+     * @param rootObjectName root object unique name
      */
-    void createBucket(String bucketName);
+    void createRootObject(String rootObjectName);
 
     /**
      * Get an object stored on an object storage manager
@@ -65,10 +65,17 @@ public interface IDataObjectHelper {
     String publish(String objectName);
 
     /**
+     * Check if a root object
+     *
+     * @param rootObjectName root object unique name
+     */
+    boolean doesRootObjectExists(String rootObjectName);
+
+    /**
      * Check if object exists on the object storage
      *
      * @param objectName object to check
      * @return true if object exist, else false (will log exception)
      */
-    boolean objectExists(String objectName);
+    boolean doesObjectExists(String objectName);
 }
