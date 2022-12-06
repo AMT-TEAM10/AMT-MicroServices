@@ -16,6 +16,7 @@
 ```
 
 #### Response body as Content-Type: application/json
+The response is an array of Labels:
 ```json
 [
   {

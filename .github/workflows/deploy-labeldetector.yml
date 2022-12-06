@@ -26,9 +26,8 @@ jobs:
       -
         name: Build and push
         uses: docker/build-push-action@v3
+        working-directory: ./labeldetector
         with:
-          context: ./labeldetector
-          file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/labeldetector:latest
 
