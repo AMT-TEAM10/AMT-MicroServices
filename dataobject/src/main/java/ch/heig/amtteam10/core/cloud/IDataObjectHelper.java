@@ -66,6 +66,7 @@ public interface IDataObjectHelper {
 
     /**
      * Check if object exists on the object storage
+     *
      * @param objectName object to check
      * @return true if object exist, else false (will log exception)
      */
