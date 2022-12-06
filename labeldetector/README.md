@@ -27,6 +27,7 @@ The response is an array of Labels:
 ```
 
 #### CURL example
+Here is an example of a CURL request:
 ```bash
 curl --location --request POST 'localhost:8080/process' \
 --header 'Content-Type: application/json' \
