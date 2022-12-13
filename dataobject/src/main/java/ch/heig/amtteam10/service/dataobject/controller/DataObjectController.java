@@ -1,6 +1,7 @@
 package ch.heig.amtteam10.service.dataobject.controller;
 
 import ch.heig.amtteam10.core.cloud.AWSClient;
+import ch.heig.amtteam10.service.dataobject.service.DataObjectService;
 import ch.heig.amtteam10.service.dataobject.service.storage.StorageNotFoundException;
 import ch.heig.amtteam10.service.dataobject.service.storage.StorageService;
 import org.slf4j.Logger;
@@ -20,11 +21,14 @@ import java.nio.file.Path;
 public class DataObjectController {
     private final StorageService storageService;
 
+    private final DataObjectService dataObjectService;
+
     Logger logger = LoggerFactory.getLogger(DataObjectController.class);
 
     @Autowired
-    public DataObjectController(StorageService storageService) {
+    public DataObjectController(StorageService storageService, DataObjectService dataObjectService) {
         this.storageService = storageService;
+        this.dataObjectService = dataObjectService;
     }
 
     @GetMapping("/object/{objectName}")
@@ -35,7 +39,7 @@ public class DataObjectController {
 
         ByteArrayResource resource;
         try {
-            resource = new ByteArrayResource(AWSClient.getInstance().dataObject().get(objectName));
+            resource = dataObjectService.getObject(objectName);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -56,15 +60,15 @@ public class DataObjectController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        dataObjectService.createObject(objectName, file, storageService);
+/*
         try {
-            storageService.store(file, objectName);
-            Path filepath = storageService.load(objectName);
-            File objectFile = new File(filepath.toUri());
-            AWSClient.getInstance().dataObject().create(objectName, objectFile);
-            storageService.delete(objectName);
+
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
+ */
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -78,7 +82,8 @@ public class DataObjectController {
         if (objectName.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        AWSClient.getInstance().dataObject().delete(objectName);
+
+        dataObjectService.deleteObject(objectName);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -89,7 +94,7 @@ public class DataObjectController {
         }
         String url;
         try {
-            url = AWSClient.getInstance().dataObject().publish(objectName);
+            url = dataObjectService.getPublishLink(objectName);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
