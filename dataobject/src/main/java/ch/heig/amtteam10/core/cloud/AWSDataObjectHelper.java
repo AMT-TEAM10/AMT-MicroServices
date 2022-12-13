@@ -25,7 +25,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
     private final static int PUBLIC_LINK_VALIDITY_DURATION = Integer.parseInt(Env.get("PUBLIC_LINK_VALIDITY_DURATION"));
 
     @Override
-    public void createBucket(String bucketName) {
+    public void createRootObject(String bucketName) {
         AWSClient client = AWSClient.getInstance();
 
         try {
@@ -37,7 +37,29 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
     }
 
     @Override
+    public boolean doesRootObjectExists(String bucketName) {
+        try {
+            AWSClient.getInstance().getS3Client()
+                    .headBucket(HeadBucketRequest.builder()
+                            .bucket(bucketName)
+                            .build());
+            return true;
+        } catch (NoSuchBucketException e) {
+            Logger.getLogger(AWSDataObjectHelper.class.getName()).log(Level.WARNING, e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
     public byte[] get(String objectName) throws NoObjectFoundException {
+        if (!doesRootObjectExists(Env.get("AWS_BUCKET_NAME"))) {
+            throw new NoObjectFoundException("Bucket not found");
+        }
+
+        if (!doesObjectExists(objectName)) {
+            throw new NoObjectFoundException("Object not found");
+        }
+
         GetObjectRequest objectRequestGet = GetObjectRequest
                 .builder()
                 .bucket(Env.get("AWS_BUCKET_NAME"))
@@ -56,6 +78,10 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
 
     @Override
     public void create(String objectName, File file) {
+        if (!doesRootObjectExists(Env.get("AWS_BUCKET_NAME"))) {
+            throw new RuntimeException("Bucket not found");
+        }
+
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(Env.get("AWS_BUCKET_NAME"))
                 .key(objectName)
@@ -65,6 +91,10 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
 
     @Override
     public void create(String objectName, String rawContent) {
+        if (!doesRootObjectExists(Env.get("AWS_BUCKET_NAME"))) {
+            throw new RuntimeException("Bucket not found");
+        }
+
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(Env.get("AWS_BUCKET_NAME"))
                 .key(objectName)
@@ -79,7 +109,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
 
     @Override
     public void delete(String objectName) throws NoObjectFoundException {
-        if (!objectExists(objectName)) {
+        if (!doesObjectExists(objectName)) {
             throw new NoObjectFoundException(objectName);
         }
         DeleteObjectRequest request = DeleteObjectRequest.builder()
@@ -115,7 +145,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
 
     @Override
     public String publish(String objectName) throws NoObjectFoundException {
-        if (!objectExists(objectName)) {
+        if (!doesObjectExists(objectName)) {
             throw new NoObjectFoundException(objectName);
         }
 
@@ -138,7 +168,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
     }
 
     @Override
-    public boolean objectExists(String objectName) {
+    public boolean doesObjectExists(String objectName) {
         try {
             AWSClient.getInstance().getS3Client()
                     .headObject(HeadObjectRequest.builder()
