@@ -1,6 +1,7 @@
 package ch.heig.amtteam10.core.cloud;
 
 import ch.heig.amtteam10.core.Env;
+import ch.heig.amtteam10.core.exceptions.BucketAlreadyCreatedException;
 import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -25,14 +26,14 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
     private final static int PUBLIC_LINK_VALIDITY_DURATION = Integer.parseInt(Env.get("PUBLIC_LINK_VALIDITY_DURATION"));
 
     @Override
-    public void createRootObject(String bucketName) {
+    public void createRootObject(String bucketName) throws BucketAlreadyCreatedException {
         AWSClient client = AWSClient.getInstance();
 
         try {
             CreateBucketRequest req = CreateBucketRequest.builder().bucket(bucketName).build();
             client.getS3Client().createBucket(req);
-        } catch (BucketAlreadyExistsException e) {
-            throw new RuntimeException(e.getMessage());
+        } catch (BucketAlreadyExistsException | BucketAlreadyOwnedByYouException e) {
+            throw new BucketAlreadyCreatedException(bucketName);
         }
     }
 

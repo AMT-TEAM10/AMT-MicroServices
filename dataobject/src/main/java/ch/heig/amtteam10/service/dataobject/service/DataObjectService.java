@@ -2,6 +2,7 @@ package ch.heig.amtteam10.service.dataobject.service;
 
 import ch.heig.amtteam10.core.Env;
 import ch.heig.amtteam10.core.cloud.AWSClient;
+import ch.heig.amtteam10.core.exceptions.BucketAlreadyCreatedException;
 import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
 import ch.heig.amtteam10.service.dataobject.service.storage.StorageService;
 import org.springframework.core.io.ByteArrayResource;
@@ -39,7 +40,7 @@ public class DataObjectService {
         try {
             AWSClient.getInstance().dataObject().createRootObject(Env.get("AWS_BUCKET_NAME"));
             return true;
-        } catch(BucketAlreadyExistsException e) {
+        } catch(BucketAlreadyCreatedException e) {
             return false;
         }
     }
