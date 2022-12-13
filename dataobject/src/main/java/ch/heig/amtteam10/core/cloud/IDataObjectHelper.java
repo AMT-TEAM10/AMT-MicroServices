@@ -1,5 +1,6 @@
 package ch.heig.amtteam10.core.cloud;
 
+import ch.heig.amtteam10.core.exceptions.BucketAlreadyCreatedException;
 import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
 
 import java.io.File;
@@ -18,7 +19,7 @@ public interface IDataObjectHelper {
      *
      * @param rootObjectName root object unique name
      */
-    void createRootObject(String rootObjectName);
+    void createRootObject(String rootObjectName) throws BucketAlreadyCreatedException;
 
     /**
      * Get an object stored on an object storage manager
