@@ -2,6 +2,7 @@ package ch.heig.amtteam10.service.dataobject;
 
 import ch.heig.amtteam10.core.cloud.AWSClient;
 import ch.heig.amtteam10.core.cloud.AWSDataObjectHelper;
+import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +45,7 @@ class DataObjectApplicationTests {
     }
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws NoObjectFoundException {
         if (!client.dataObject().doesObjectExists(EXISTING_OBJECT_KEY)) {
             client.dataObject().create(EXISTING_OBJECT_KEY, "existingObject");
         }
@@ -167,7 +168,7 @@ class DataObjectApplicationTests {
         client.dataObject().delete(EXISTING_OBJECT_KEY);
 
         // Then it should be deleted
-        assertThrows(RuntimeException.class, () -> client.dataObject().get(OBJECT_CAN_BE_CREATED_KEY));
+        assertThrows(NoObjectFoundException.class, () -> client.dataObject().get(OBJECT_CAN_BE_CREATED_KEY));
     }
 
     @Test
@@ -175,7 +176,7 @@ class DataObjectApplicationTests {
         // Given having a non-existing object
         // When I try to delete it
         // Then it should throw an exception
-        assertThrows(RuntimeException.class, () -> client.dataObject().delete(NON_EXISTING_OBJECT_KEY));
+        assertThrows(NoObjectFoundException.class, () -> client.dataObject().delete("thisObjectDoesNotExist.jpg"));
     }
 
     public void RemoveObject_FolderObjectExistWithoutRecursiveOption_ThrowException()
@@ -224,4 +225,62 @@ class DataObjectApplicationTests {
         assertThrows(RuntimeException.class, () -> client.dataObject().publish(NON_EXISTING_OBJECT_KEY));
     }
     // publish object end
+    @Nested
+    class TestWithListObject{
+        static String folderName = "testFolder";
+        static String[] objectNames = {
+                folderName + "/test1.jpg",
+                folderName + "/test2.jpg",
+                folderName + "/dir1/test3.jpg",
+                folderName + "/dir1/test4.jpg",
+        };
+
+        @BeforeAll
+        public static void init() {
+            // create N objects
+            for (String objectName : objectNames) {
+                client.dataObject().create(objectName, "test");
+            }
+        }
+
+        @Test
+        public void shouldListObjects() {
+            // Given having N objects
+            // When I want to list them
+            // Then I should get N objects
+            var list = client.dataObject().listObjects(folderName);
+            assertEquals(list.size(), objectNames.length);
+        }
+
+        @Test
+        public void shouldDeleteFolder() throws NoObjectFoundException {
+            // Given having N objects
+            // When I want to delete them
+            // Then I should get 0 objects
+            client.dataObject().deleteFolder(folderName);
+            var list = client.dataObject().listObjects(folderName);
+            assertEquals(list.size(), 0);
+        }
+
+        @Test
+        public void shouldThrowWhenDeleteInexistantFolder() {
+            // Given having a non-existing folder
+            // When I try to delete it
+            // Then it should throw an exception
+            assertThrows(NoObjectFoundException.class, () -> client.dataObject().deleteFolder("thisFolderDoesNotExist"));
+        }
+
+        @AfterAll
+        public static void cleanup() {
+            // delete N objects
+            for (String objectName : objectNames) {
+                try{
+                    client.dataObject().delete(objectName);
+                } catch (Exception e) {
+                    // do nothing
+                }
+            }
+        }
+    }
+
 }

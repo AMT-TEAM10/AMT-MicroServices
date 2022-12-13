@@ -2,6 +2,7 @@ package ch.heig.amtteam10.service.dataobject.controller;
 
 import ch.heig.amtteam10.core.cloud.AWSClient;
 import ch.heig.amtteam10.service.dataobject.service.DataObjectService;
+import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
 import ch.heig.amtteam10.service.dataobject.service.storage.StorageNotFoundException;
 import ch.heig.amtteam10.service.dataobject.service.storage.StorageService;
 import org.slf4j.Logger;
@@ -13,9 +14,6 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.nio.file.Path;
 
 @RestController
 public class DataObjectController {
@@ -40,7 +38,7 @@ public class DataObjectController {
         ByteArrayResource resource;
         try {
             resource = dataObjectService.getObject(objectName);
-        } catch (RuntimeException e) {
+        } catch (NoObjectFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -95,7 +93,7 @@ public class DataObjectController {
         String url;
         try {
             url = dataObjectService.getPublishLink(objectName);
-        } catch (RuntimeException e) {
+        } catch (NoObjectFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok().body(url);

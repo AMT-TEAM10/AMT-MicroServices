@@ -1,0 +1,24 @@
+name: "Test DataObject"
+on:
+  push:
+    paths:
+      - "dataobject/**"
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    name: Run unit tests
+    env:
+      AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      PUBLIC_LINK_VALIDITY_DURATION: 60
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 18
+        uses: actions/setup-java@v1
+        with:
+          java-version: 18
+      - name: Install the dependencies & run the tests
+        working-directory: ./dataobject
+        run: mvn clean test
