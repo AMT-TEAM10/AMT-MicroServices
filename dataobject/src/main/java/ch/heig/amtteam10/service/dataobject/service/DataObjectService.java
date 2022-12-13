@@ -1,6 +1,7 @@
 package ch.heig.amtteam10.service.dataobject.service;
 
 import ch.heig.amtteam10.core.cloud.AWSClient;
+import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
 import ch.heig.amtteam10.service.dataobject.service.storage.StorageService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import java.nio.file.Path;
 @Service
 public class DataObjectService {
 
-    public ByteArrayResource getObject(String objectName) {
+    public ByteArrayResource getObject(String objectName) throws NoObjectFoundException {
         return new ByteArrayResource(AWSClient.getInstance().dataObject().get(objectName));
     }
 
@@ -24,11 +25,11 @@ public class DataObjectService {
         storageService.delete(objectName);
     }
 
-    public void deleteObject(String objectName) {
+    public void deleteObject(String objectName) throws NoObjectFoundException {
         AWSClient.getInstance().dataObject().delete(objectName);
     }
 
-    public String getPublishLink(String objectName) {
+    public String getPublishLink(String objectName) throws NoObjectFoundException {
         return AWSClient.getInstance().dataObject().publish(objectName);
     }
 }

@@ -53,11 +53,11 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
     @Override
     public byte[] get(String objectName) throws NoObjectFoundException {
         if (!doesRootObjectExists(Env.get("AWS_BUCKET_NAME"))) {
-            throw new RuntimeException("Bucket not found");
+            throw new NoObjectFoundException("Bucket not found");
         }
 
         if (!doesObjectExists(objectName)) {
-            throw new RuntimeException("Object not found");
+            throw new NoObjectFoundException("Object not found");
         }
 
         GetObjectRequest objectRequestGet = GetObjectRequest
@@ -109,7 +109,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
 
     @Override
     public void delete(String objectName) throws NoObjectFoundException {
-        if (!objectExists(objectName)) {
+        if (!doesObjectExists(objectName)) {
             throw new NoObjectFoundException(objectName);
         }
         DeleteObjectRequest request = DeleteObjectRequest.builder()
@@ -145,7 +145,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
 
     @Override
     public String publish(String objectName) throws NoObjectFoundException {
-        if (!objectExists(objectName)) {
+        if (!doesObjectExists(objectName)) {
             throw new NoObjectFoundException(objectName);
         }
 

@@ -1,12 +1,9 @@
 package ch.heig.amtteam10.service.dataobject.controller;
 
-import ch.heig.amtteam10.core.cloud.AWSClient;
 import ch.heig.amtteam10.service.dataobject.service.DataObjectService;
 import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
 import ch.heig.amtteam10.service.dataobject.service.storage.StorageNotFoundException;
 import ch.heig.amtteam10.service.dataobject.service.storage.StorageService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -20,8 +17,6 @@ public class DataObjectController {
     private final StorageService storageService;
 
     private final DataObjectService dataObjectService;
-
-    Logger logger = LoggerFactory.getLogger(DataObjectController.class);
 
     @Autowired
     public DataObjectController(StorageService storageService, DataObjectService dataObjectService) {
@@ -76,7 +71,7 @@ public class DataObjectController {
     }
 
     @DeleteMapping("/object/{objectName}")
-    public ResponseEntity<Resource> delete(@PathVariable String objectName) {
+    public ResponseEntity<Resource> delete(@PathVariable String objectName) throws NoObjectFoundException {
         if (objectName.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

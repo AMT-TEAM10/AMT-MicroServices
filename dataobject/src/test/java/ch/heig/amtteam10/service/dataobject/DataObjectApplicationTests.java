@@ -3,10 +3,7 @@ package ch.heig.amtteam10.service.dataobject;
 import ch.heig.amtteam10.core.cloud.AWSClient;
 import ch.heig.amtteam10.core.cloud.AWSDataObjectHelper;
 import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
@@ -104,7 +101,7 @@ class DataObjectApplicationTests {
 
     // create object
     @Test
-    public void UploadObject_RootObjectExistsNewObject_Uploaded() throws IOException {
+    public void UploadObject_RootObjectExistsNewObject_Uploaded() throws IOException, NoObjectFoundException {
         // Given a local file
         File originFile = new File(classLoader.getResource(TEST_FILE_1_NAME).getFile());
         client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, originFile);
@@ -120,7 +117,7 @@ class DataObjectApplicationTests {
     }
 
     @Test
-    public void UploadObject_RootObjectExistsObjectExists_Uploaded() throws IOException {
+    public void UploadObject_RootObjectExistsObjectExists_Uploaded() throws IOException, NoObjectFoundException {
         // Given two files
         client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, new File(classLoader.getResource(TEST_FILE_1_NAME).getFile()));
         client.dataObject().update(OBJECT_CAN_BE_CREATED_KEY, new File(classLoader.getResource(TEST_FILE_2_NAME).getFile()));
@@ -140,7 +137,7 @@ class DataObjectApplicationTests {
 
     // get object
     @Test
-    public void DownloadObject_ObjectExists_Downloaded() {
+    public void DownloadObject_ObjectExists_Downloaded() throws NoObjectFoundException {
         // Given an existing object on the object storage
 
         // When I ask to get the object
@@ -155,14 +152,13 @@ class DataObjectApplicationTests {
         // Given a non-existing object on the object storage
         // When I ask to get the object
         // Then I should get an exception
-        assertThrows(RuntimeException.class, () -> client.dataObject().get(NON_EXISTING_OBJECT_KEY));
+        assertThrows(NoObjectFoundException.class, () -> client.dataObject().get(NON_EXISTING_OBJECT_KEY));
     }
     // get object end
 
-
     // remove object
     @Test
-    public void RemoveObject_SingleObjectExists_Removed() {
+    public void RemoveObject_SingleObjectExists_Removed() throws NoObjectFoundException {
         // Given having an existing object
         // When I want to delete it
         client.dataObject().delete(EXISTING_OBJECT_KEY);
@@ -210,7 +206,7 @@ class DataObjectApplicationTests {
 
     // publish object
     @Test
-    public void PublishObject_ObjectExists_Published() throws IOException {
+    public void PublishObject_ObjectExists_Published() throws IOException, NoObjectFoundException {
         // Given an existing object
         // When I want to publish it
         // Then I should get a private link to the object
@@ -222,7 +218,7 @@ class DataObjectApplicationTests {
 
     @Test
     public void PublishObject_ObjectDoesntExist_ThrowException() throws IOException {
-        assertThrows(RuntimeException.class, () -> client.dataObject().publish(NON_EXISTING_OBJECT_KEY));
+        assertThrows(NoObjectFoundException.class, () -> client.dataObject().publish(NON_EXISTING_OBJECT_KEY));
     }
     // publish object end
     @Nested
