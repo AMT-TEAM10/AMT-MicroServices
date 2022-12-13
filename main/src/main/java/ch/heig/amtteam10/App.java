@@ -69,11 +69,43 @@ public class App
         System.out.println(result);
     }
 
+    public void scenario2() throws UnirestException, JsonProcessingException {
+        System.out.println("Uploading object...");
+        var uplaodResult = uploadObject("mysuperimage2.jpg", App.class.getClassLoader().getResourceAsStream("main.jpeg"));
+        System.out.println(uplaodResult);
+
+        System.out.println("Publishing object...");
+        String url = publishObject("mysuperimage2.jpg");
+        System.out.println(url);
+
+        System.out.println("Analyzing image...");
+        var result = analyseImage(url, 10, 0.5f);
+        System.out.println(result);
+    }
+
+
+
+    public void scenario3() throws UnirestException, JsonProcessingException {
+        System.out.println("Publishing object...");
+        String url = publishObject("mysuperimage.jpg");
+        System.out.println(url);
+
+        System.out.println("Analyzing image...");
+        var result = analyseImage(url, 10, 0.5f);
+        System.out.println(result);
+    }
+
+
+
 
 
     public static void main( String[] args ) throws JsonProcessingException, UnirestException {
         App app = new App();
+        System.out.println("Scenario 1");
         app.scenario1();
-
+        System.out.println("Scenario 2");
+        app.scenario2();
+        System.out.println("Scenario 3");
+        app.scenario3();
     }
 }
