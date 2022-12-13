@@ -53,15 +53,12 @@ public class DataObjectController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        dataObjectService.createObject(objectName, file, storageService);
-/*
         try {
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            dataObjectService.createObject(objectName, file, storageService);
+        } catch (NoObjectFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
- */
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

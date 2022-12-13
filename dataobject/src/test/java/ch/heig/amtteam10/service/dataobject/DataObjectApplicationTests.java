@@ -23,6 +23,7 @@ class DataObjectApplicationTests {
     private static final String TEST_FILE_1_NAME = "main.jpeg";
     private static final String TEST_FILE_2_NAME = "test.png";
     private static final String OUTPUT_FILE_NAME = "output.jpeg";
+    private static final String RAW_CONTENT_TEST = "test";
 
     private static AWSClient client;
 
@@ -174,35 +175,7 @@ class DataObjectApplicationTests {
         // Then it should throw an exception
         assertThrows(NoObjectFoundException.class, () -> client.dataObject().delete("thisObjectDoesNotExist.jpg"));
     }
-
-    public void RemoveObject_FolderObjectExistWithoutRecursiveOption_ThrowException()
-    {
-        //given
-
-        //when
-
-        //then
-    }
-
-    public void RemoveObject_FolderObjectExistWithRecursiveOption_Removed()
-    {
-        //given
-
-        //when
-
-        //then
-    }
-
-    public void RemoveObject_RootObjectNotEmptyWithoutRecursiveOption_ThrowException()
-    {
-        //given
-
-        //when
-
-        //then
-    }
     // remove object end
-
 
     // publish object
     @Test
@@ -240,7 +213,7 @@ class DataObjectApplicationTests {
         }
 
         @Test
-        public void shouldListObjects() {
+        public void ListObject_FolderObjectExists_Listed() {
             // Given having N objects
             // When I want to list them
             // Then I should get N objects
@@ -249,7 +222,7 @@ class DataObjectApplicationTests {
         }
 
         @Test
-        public void shouldDeleteFolder() throws NoObjectFoundException {
+        public void RemoveObject_FolderObjectExistWithRecursiveOption_Removed() throws NoObjectFoundException {
             // Given having N objects
             // When I want to delete them
             // Then I should get 0 objects
@@ -259,7 +232,7 @@ class DataObjectApplicationTests {
         }
 
         @Test
-        public void shouldThrowWhenDeleteInexistantFolder() {
+        public void RemoveObject_FolderObjectNotExist_ThrowException() {
             // Given having a non-existing folder
             // When I try to delete it
             // Then it should throw an exception

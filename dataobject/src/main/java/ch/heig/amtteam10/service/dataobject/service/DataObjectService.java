@@ -17,7 +17,7 @@ public class DataObjectService {
         return new ByteArrayResource(AWSClient.getInstance().dataObject().get(objectName));
     }
 
-    public void createObject(String objectName, MultipartFile file, StorageService storageService) {
+    public void createObject(String objectName, MultipartFile file, StorageService storageService) throws NoObjectFoundException {
         storageService.store(file, objectName);
         Path filepath = storageService.load(objectName);
         File objectFile = new File(filepath.toUri());
