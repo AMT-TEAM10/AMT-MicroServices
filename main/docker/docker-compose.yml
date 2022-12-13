@@ -1,0 +1,20 @@
+version: '3.9'
+services:
+  labeldetector:
+    environment:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: eu-west-2
+    image: nicrausaz/labeldetector:latest
+    ports:
+      - "8080:8080"
+  dataobject:
+    environment:
+      AWS_BUCKET_NAME: amt.team10.diduno.education
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: eu-west-2
+      PUBLIC_LINK_VALIDITY_DURATION: 60
+    image: nicrausaz/dataobject:latest
+    ports:
+      - "8081:8080"

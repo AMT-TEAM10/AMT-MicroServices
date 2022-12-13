@@ -6,7 +6,6 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-import java.io.File;
 import java.io.InputStream;
 
 /**
@@ -62,7 +61,7 @@ public class App
         System.out.println(uplaodResult);
 
         System.out.println("Publishing object...");
-        String url = publishObject("test.jpg");
+        String url = publishObject("mysuperimage.jpg");
         System.out.println(url);
 
         System.out.println("Analyzing image...");
