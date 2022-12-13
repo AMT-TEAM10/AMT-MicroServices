@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class DataObjectApplicationTests {
     private static final String EXISTING_OBJECT_KEY = "existingObject";
     private static final String NON_EXISTING_OBJECT_KEY = "thisObjectDoesNotExist";
-
     private static final String OBJECT_CAN_BE_CREATED_KEY = "objectCanBeCreated";
     private static final String TEST_FILE_1_NAME = "main.jpeg";
     private static final String TEST_FILE_2_NAME = "test.png";
@@ -54,8 +53,9 @@ class DataObjectApplicationTests {
         }
     }
 
+    // object exists
     @Test
-    public void shouldVerifyIfRootObjectExistsIfRootObjectDoesExists() {
+    public void DoesObjectExist_RootObjectExists_Exists() {
         // Given an existing bucket
         final String bName = "amt.team10.diduno.education";
 
@@ -67,7 +67,7 @@ class DataObjectApplicationTests {
     }
 
     @Test
-    public void shouldVerifyIfRootObjectExistsIfRootObjectDoesntExists() {
+    public void DoesObjectExist_RootObjectDoesntExist_DoesntExist() {
         // Given a non-existing bucket
         final String bName = "amt.team10.diduno.education____";
 
@@ -79,7 +79,7 @@ class DataObjectApplicationTests {
     }
 
     @Test
-    public void shouldVerifyIfObjectExist() {
+    public void DoesObjectExist_RootObjectAndObjectExist_Exists() {
         // Given an existing object
 
         // When I check if it exists
@@ -90,7 +90,7 @@ class DataObjectApplicationTests {
     }
 
     @Test
-    public void shouldVerifyIfObjectDoesNotExist() {
+    public void DoesObjectExist_RootObjectExistObjectDoesntExist_DoesntExist() {
         // Given an existing object
 
         // When I check if it exists
@@ -99,9 +99,11 @@ class DataObjectApplicationTests {
         // Then I should get that it does not exist
         assertFalse(exists);
     }
+    // object exists end
 
+    // create object
     @Test
-    public void shouldCreateObjectIfRootObjectExistAndObjectDoesntExist() throws IOException {
+    public void UploadObject_RootObjectExistsNewObject_Uploaded() throws IOException {
         // Given a local file
         File originFile = new File(classLoader.getResource(TEST_FILE_1_NAME).getFile());
         client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, originFile);
@@ -117,37 +119,7 @@ class DataObjectApplicationTests {
     }
 
     @Test
-    public void shouldCreateObjectIfRootObjectExistAndObjectExist() throws IOException {
-        // Given a local file and an existing file on the storage
-
-        // When I create an object on the object storage with the same name of the already existing object
-
-        // Then it should replace the file and have the same content if I compare the files (local + storage)
-    }
-
-    @Test
-    public void shouldGetAnObjectIfItExists() {
-        // Given an existing object on the object storage
-
-        // When I ask to get the object
-        byte[] object = client.dataObject().get(EXISTING_OBJECT_KEY);
-
-        // Then I should get the object
-        assertNotNull(object);
-    }
-
-    @Test
-    public void shouldThrowIfGettingAnObjectIfItDoesntExists() {
-        // Given a non-existing object on the object storage
-
-        // When I ask to get the object
-        byte[] object = client.dataObject().get(NON_EXISTING_OBJECT_KEY);
-
-        // Then I should get an exception
-    }
-
-    @Test
-    public void shouldUpdateObject() throws IOException {
+    public void UploadObject_RootObjectExistsObjectExists_Uploaded() throws IOException {
         // Given two files
         client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, new File(classLoader.getResource(TEST_FILE_1_NAME).getFile()));
         client.dataObject().update(OBJECT_CAN_BE_CREATED_KEY, new File(classLoader.getResource(TEST_FILE_2_NAME).getFile()));
@@ -163,9 +135,33 @@ class DataObjectApplicationTests {
         // Then the file should be the same as the second file's content
         assertEquals(Files.mismatch(originFile.toPath(), outputFile.toPath()), -1L);
     }
+    // create object end
+
+    // get object
+    @Test
+    public void DownloadObject_ObjectExists_Downloaded() {
+        // Given an existing object on the object storage
+
+        // When I ask to get the object
+        byte[] object = client.dataObject().get(EXISTING_OBJECT_KEY);
+
+        // Then I should get the object
+        assertNotNull(object);
+    }
 
     @Test
-    public void shouldDeleteObject() {
+    public void DownloadObject_ObjectDoesntExist_ThrowException() {
+        // Given a non-existing object on the object storage
+        // When I ask to get the object
+        // Then I should get an exception
+        assertThrows(RuntimeException.class, () -> client.dataObject().get(NON_EXISTING_OBJECT_KEY));
+    }
+    // get object end
+
+
+    // remove object
+    @Test
+    public void RemoveObject_SingleObjectExists_Removed() {
         // Given having an existing object
         // When I want to delete it
         client.dataObject().delete(EXISTING_OBJECT_KEY);
@@ -175,15 +171,45 @@ class DataObjectApplicationTests {
     }
 
     @Test
-    public void shouldThrowWhenDeleteInexistantObject() {
+    public void RemoveObject_SingleObjectDoesntExist_ThrowException() {
         // Given having a non-existing object
         // When I try to delete it
         // Then it should throw an exception
-        assertThrows(RuntimeException.class, () -> client.dataObject().delete("thisObjectDoesNotExist.jpg"));
+        assertThrows(RuntimeException.class, () -> client.dataObject().delete(NON_EXISTING_OBJECT_KEY));
     }
 
+    public void RemoveObject_FolderObjectExistWithoutRecursiveOption_ThrowException()
+    {
+        //given
+
+        //when
+
+        //then
+    }
+
+    public void RemoveObject_FolderObjectExistWithRecursiveOption_Removed()
+    {
+        //given
+
+        //when
+
+        //then
+    }
+
+    public void RemoveObject_RootObjectNotEmptyWithoutRecursiveOption_ThrowException()
+    {
+        //given
+
+        //when
+
+        //then
+    }
+    // remove object end
+
+
+    // publish object
     @Test
-    public void shouldGetAnUrlWithPublish() throws IOException {
+    public void PublishObject_ObjectExists_Published() throws IOException {
         // Given an existing object
         // When I want to publish it
         // Then I should get a private link to the object
@@ -192,4 +218,10 @@ class DataObjectApplicationTests {
         con.setRequestMethod("GET");
         assertEquals(con.getResponseCode(), 200);
     }
+
+    @Test
+    public void PublishObject_ObjectDoesntExist_ThrowException() throws IOException {
+        assertThrows(RuntimeException.class, () -> client.dataObject().publish(NON_EXISTING_OBJECT_KEY));
+    }
+    // publish object end
 }
