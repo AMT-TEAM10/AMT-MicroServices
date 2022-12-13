@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.BucketAlreadyExistsException;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 
 @Service
@@ -20,12 +21,8 @@ public class DataObjectService {
         return new ByteArrayResource(AWSClient.getInstance().dataObject().get(objectName));
     }
 
-    public void createObject(String objectName, MultipartFile file, StorageService storageService) throws NoObjectFoundException {
-        storageService.store(file, objectName);
-        Path filepath = storageService.load(objectName);
-        File objectFile = new File(filepath.toUri());
-        AWSClient.getInstance().dataObject().create(objectName, objectFile);
-        storageService.delete(objectName);
+    public void createObject(String objectName, MultipartFile file) throws NoObjectFoundException, IOException {
+        AWSClient.getInstance().dataObject().create(objectName, file.getBytes());
     }
 
     public void deleteObject(String objectName) throws NoObjectFoundException {

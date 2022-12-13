@@ -45,7 +45,7 @@ class DataObjectApplicationTests {
     @BeforeEach
     public void setup() throws NoObjectFoundException {
         if (!client.dataObject().doesObjectExists(EXISTING_OBJECT_KEY)) {
-            client.dataObject().create(EXISTING_OBJECT_KEY, "existingObject");
+            client.dataObject().create(EXISTING_OBJECT_KEY, "existingObject".getBytes());
         }
         if (client.dataObject().doesObjectExists(OBJECT_CAN_BE_CREATED_KEY)) {
             client.dataObject().delete(OBJECT_CAN_BE_CREATED_KEY);
@@ -208,7 +208,7 @@ class DataObjectApplicationTests {
         public static void init() {
             // create N objects
             for (String objectName : objectNames) {
-                client.dataObject().create(objectName, "test");
+                client.dataObject().create(objectName, "test".getBytes());
             }
         }
 

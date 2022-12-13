@@ -91,7 +91,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
     }
 
     @Override
-    public void create(String objectName, String rawContent) {
+    public void create(String objectName,  byte[] bytes) {
         if (!doesRootObjectExists(Env.get("AWS_BUCKET_NAME"))) {
             throw new RuntimeException("Bucket not found");
         }
@@ -100,7 +100,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
                 .bucket(Env.get("AWS_BUCKET_NAME"))
                 .key(objectName)
                 .build();
-        AWSClient.getInstance().getS3Client().putObject(objectRequest, RequestBody.fromString(rawContent));
+        AWSClient.getInstance().getS3Client().putObject(objectRequest, RequestBody.fromBytes(bytes));
     }
 
     @Override

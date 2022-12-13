@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 public class DataObjectController {
     private final StorageService storageService;
@@ -62,9 +64,11 @@ public class DataObjectController {
         }
 
         try {
-            dataObjectService.createObject(objectName, file, storageService);
+            dataObjectService.createObject(objectName, file);
         } catch (NoObjectFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IOException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity<>(HttpStatus.OK);
