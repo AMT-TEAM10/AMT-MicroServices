@@ -1,6 +1,7 @@
 package ch.heig.amtteam10.service.dataobject.controller;
 
 import ch.heig.amtteam10.core.cloud.AWSClient;
+import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
 import ch.heig.amtteam10.service.dataobject.service.storage.StorageNotFoundException;
 import ch.heig.amtteam10.service.dataobject.service.storage.StorageService;
 import org.slf4j.Logger;
@@ -36,7 +37,7 @@ public class DataObjectController {
         ByteArrayResource resource;
         try {
             resource = new ByteArrayResource(AWSClient.getInstance().dataObject().get(objectName));
-        } catch (RuntimeException e) {
+        } catch (NoObjectFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -78,7 +79,11 @@ public class DataObjectController {
         if (objectName.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        AWSClient.getInstance().dataObject().delete(objectName);
+        try {
+            AWSClient.getInstance().dataObject().delete(objectName);
+        } catch (NoObjectFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -90,7 +95,7 @@ public class DataObjectController {
         String url;
         try {
             url = AWSClient.getInstance().dataObject().publish(objectName);
-        } catch (RuntimeException e) {
+        } catch (NoObjectFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok().body(url);
