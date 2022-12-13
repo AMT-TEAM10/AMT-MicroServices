@@ -1,11 +1,9 @@
 package ch.heig.amtteam10.service.dataobject.controller;
 
-import ch.heig.amtteam10.core.cloud.AWSClient;
+import ch.heig.amtteam10.service.dataobject.service.DataObjectService;
 import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
 import ch.heig.amtteam10.service.dataobject.service.storage.StorageNotFoundException;
 import ch.heig.amtteam10.service.dataobject.service.storage.StorageService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -14,18 +12,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.nio.file.Path;
-
 @RestController
 public class DataObjectController {
     private final StorageService storageService;
 
-    Logger logger = LoggerFactory.getLogger(DataObjectController.class);
+    private final DataObjectService dataObjectService;
 
     @Autowired
-    public DataObjectController(StorageService storageService) {
+    public DataObjectController(StorageService storageService, DataObjectService dataObjectService) {
         this.storageService = storageService;
+        this.dataObjectService = dataObjectService;
     }
 
     @GetMapping("/object/{objectName}")
@@ -36,7 +32,7 @@ public class DataObjectController {
 
         ByteArrayResource resource;
         try {
-            resource = new ByteArrayResource(AWSClient.getInstance().dataObject().get(objectName));
+            resource = dataObjectService.getObject(objectName);
         } catch (NoObjectFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -58,14 +54,11 @@ public class DataObjectController {
         }
 
         try {
-            storageService.store(file, objectName);
-            Path filepath = storageService.load(objectName);
-            File objectFile = new File(filepath.toUri());
-            AWSClient.getInstance().dataObject().create(objectName, objectFile);
-            storageService.delete(objectName);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            dataObjectService.createObject(objectName, file, storageService);
+        } catch (NoObjectFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -75,15 +68,12 @@ public class DataObjectController {
     }
 
     @DeleteMapping("/object/{objectName}")
-    public ResponseEntity<Resource> delete(@PathVariable String objectName) {
+    public ResponseEntity<Resource> delete(@PathVariable String objectName) throws NoObjectFoundException {
         if (objectName.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        try {
-            AWSClient.getInstance().dataObject().delete(objectName);
-        } catch (NoObjectFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+
+        dataObjectService.deleteObject(objectName);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -94,7 +84,7 @@ public class DataObjectController {
         }
         String url;
         try {
-            url = AWSClient.getInstance().dataObject().publish(objectName);
+            url = dataObjectService.getPublishLink(objectName);
         } catch (NoObjectFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
