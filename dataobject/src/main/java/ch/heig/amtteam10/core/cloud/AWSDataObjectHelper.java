@@ -1,6 +1,7 @@
 package ch.heig.amtteam10.core.cloud;
 
 import ch.heig.amtteam10.core.Env;
+import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.model.*;
@@ -10,6 +11,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequ
 
 import java.io.File;
 import java.time.Duration;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,7 +37,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
     }
 
     @Override
-    public byte[] get(String objectName) {
+    public byte[] get(String objectName) throws NoObjectFoundException {
         GetObjectRequest objectRequestGet = GetObjectRequest
                 .builder()
                 .bucket(Env.get("AWS_BUCKET_NAME"))
@@ -47,7 +49,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
         try {
             result = AWSClient.getInstance().getS3Client().getObjectAsBytes(objectRequestGet);
         } catch (NoSuchKeyException e) {
-            throw new RuntimeException("Key not found");
+            throw new NoObjectFoundException(objectName);
         }
         return result.asByteArray();
     }
@@ -76,9 +78,9 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
     }
 
     @Override
-    public void delete(String objectName) {
+    public void delete(String objectName) throws NoObjectFoundException {
         if (!objectExists(objectName)) {
-            throw new RuntimeException("Object not found");
+            throw new NoObjectFoundException(objectName);
         }
         DeleteObjectRequest request = DeleteObjectRequest.builder()
                 .bucket(Env.get("AWS_BUCKET_NAME"))
@@ -89,9 +91,32 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
     }
 
     @Override
-    public String publish(String objectName) {
+    public void deleteFolder(String folderName) throws NoObjectFoundException {
+        List<String> list = listObjects(folderName);
+        if (list.isEmpty()) {
+            throw new NoObjectFoundException(folderName);
+        }
+
+        for (String objectName : list) {
+            delete(objectName);
+        }
+    }
+
+    @Override
+    public List<String> listObjects(String prefix){
+        ListObjectsRequest listObjectsRequest = ListObjectsRequest.builder()
+                .bucket(Env.get("AWS_BUCKET_NAME"))
+                .prefix(prefix)
+                .build();
+
+        ListObjectsResponse listObjectsResponse = AWSClient.getInstance().getS3Client().listObjects(listObjectsRequest);
+        return listObjectsResponse.contents().stream().map(S3Object::key).toList();
+    }
+
+    @Override
+    public String publish(String objectName) throws NoObjectFoundException {
         if (!objectExists(objectName)) {
-            throw new RuntimeException("Object not found");
+            throw new NoObjectFoundException(objectName);
         }
 
         S3Presigner presigner = S3Presigner.builder()

@@ -1,6 +1,9 @@
 package ch.heig.amtteam10.core.cloud;
 
+import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
+
 import java.io.File;
+import java.util.List;
 
 /**
  * Defines a object storage manager
@@ -23,7 +26,7 @@ public interface IDataObjectHelper {
      * @param objectName name of object
      * @return object as byte array
      */
-    byte[] get(String objectName);
+    byte[] get(String objectName) throws NoObjectFoundException;
 
     /**
      * Create object (file) on an object storage manager
@@ -54,7 +57,14 @@ public interface IDataObjectHelper {
      *
      * @param objectName name of object
      */
-    void delete(String objectName);
+    void delete(String objectName) throws NoObjectFoundException;
+
+    /**
+     * Delete all objects starting with prefix.
+     * Because there are no folders in object storage, we use prefix to simulate folders.
+     * @param folderName name of folder
+     */
+    void deleteFolder(String folderName) throws NoObjectFoundException;
 
     /**
      * Get a private URL to an object
@@ -62,7 +72,7 @@ public interface IDataObjectHelper {
      * @param objectName name of object
      * @return URL to access object
      */
-    String publish(String objectName);
+    String publish(String objectName) throws NoObjectFoundException;
 
     /**
      * Check if object exists on the object storage
@@ -71,4 +81,12 @@ public interface IDataObjectHelper {
      * @return true if object exist, else false (will log exception)
      */
     boolean objectExists(String objectName);
+
+    /**
+     * Get all objects starting with prefix.
+     * Because there are no folders in object storage, we use prefix to simulate folders.
+     * @param prefix prefix of objects
+     * @return list of objects name
+     */
+    List<String> listObjects(String prefix);
 }
