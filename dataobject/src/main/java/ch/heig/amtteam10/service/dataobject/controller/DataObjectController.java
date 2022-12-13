@@ -24,6 +24,14 @@ public class DataObjectController {
         this.dataObjectService = dataObjectService;
     }
 
+    @PutMapping("/root-object")
+    public ResponseEntity<String> createRootObject() {
+        if (dataObjectService.createRootObject()) {
+            return ResponseEntity.status(HttpStatus.OK).body("Bucket created\n");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bucket already exists\n");
+    }
+
     @GetMapping("/object/{objectName}")
     public ResponseEntity<Resource> index(@PathVariable String objectName) {
         if (objectName.isEmpty()) {
