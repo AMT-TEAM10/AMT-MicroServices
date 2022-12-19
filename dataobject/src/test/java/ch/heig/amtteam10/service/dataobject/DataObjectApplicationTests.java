@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,7 +46,7 @@ class DataObjectApplicationTests {
     @BeforeEach
     public void setup() throws NoObjectFoundException {
         if (!client.dataObject().doesObjectExists(EXISTING_OBJECT_KEY)) {
-            client.dataObject().create(EXISTING_OBJECT_KEY, "existingObject");
+            client.dataObject().create(EXISTING_OBJECT_KEY, RAW_CONTENT_TEST);
         }
         if (client.dataObject().doesObjectExists(OBJECT_CAN_BE_CREATED_KEY)) {
             client.dataObject().delete(OBJECT_CAN_BE_CREATED_KEY);
@@ -80,7 +81,6 @@ class DataObjectApplicationTests {
     @Test
     public void DoesObjectExist_RootObjectAndObjectExist_Exists() {
         // Given an existing object
-
         // When I check if it exists
         boolean exists = client.dataObject().doesObjectExists(EXISTING_OBJECT_KEY);
 
@@ -120,11 +120,11 @@ class DataObjectApplicationTests {
     @Test
     public void UploadObject_RootObjectExistsObjectExists_Uploaded() throws IOException, NoObjectFoundException {
         // Given two files
-        client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, new File(classLoader.getResource(TEST_FILE_1_NAME).getFile()));
-        client.dataObject().update(OBJECT_CAN_BE_CREATED_KEY, new File(classLoader.getResource(TEST_FILE_2_NAME).getFile()));
+        client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, new File(Objects.requireNonNull(classLoader.getResource(TEST_FILE_1_NAME)).getFile()));
+        client.dataObject().update(OBJECT_CAN_BE_CREATED_KEY, new File(Objects.requireNonNull(classLoader.getResource(TEST_FILE_2_NAME)).getFile()));
 
         // When I create a fist first file, then want to replace it by another file
-        File originFile = new File(classLoader.getResource(TEST_FILE_1_NAME).getFile());
+        File originFile = new File(Objects.requireNonNull(classLoader.getResource(TEST_FILE_1_NAME)).getFile());
         client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, originFile);
         File outputFile = new File(OUTPUT_FILE_NAME);
         FileOutputStream outputStream = new FileOutputStream(outputFile);
@@ -173,7 +173,7 @@ class DataObjectApplicationTests {
         // Given having a non-existing object
         // When I try to delete it
         // Then it should throw an exception
-        assertThrows(NoObjectFoundException.class, () -> client.dataObject().delete("thisObjectDoesNotExist.jpg"));
+        assertThrows(NoObjectFoundException.class, () -> client.dataObject().delete(NON_EXISTING_OBJECT_KEY));
     }
     // remove object end
 
@@ -208,7 +208,7 @@ class DataObjectApplicationTests {
         public static void init() {
             // create N objects
             for (String objectName : objectNames) {
-                client.dataObject().create(objectName, "test");
+                client.dataObject().create(objectName, RAW_CONTENT_TEST);
             }
         }
 
