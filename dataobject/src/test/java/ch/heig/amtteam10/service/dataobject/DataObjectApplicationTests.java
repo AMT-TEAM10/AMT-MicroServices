@@ -58,6 +58,7 @@ class DataObjectApplicationTests {
     public void DoesObjectExist_RootObjectExists_Exists() {
         // Given an existing bucket
         final String bName = "amt.team10.diduno.education";
+        assertTrue(client.dataObject().doesRootObjectExists(bName));
 
         // When I check if it exists
         boolean exists = client.dataObject().doesRootObjectExists(bName);
@@ -70,6 +71,7 @@ class DataObjectApplicationTests {
     public void DoesObjectExist_RootObjectDoesntExist_DoesntExist() {
         // Given a non-existing bucket
         final String bName = "amt.team10.diduno.education____";
+        assertFalse(client.dataObject().doesRootObjectExists(bName));
 
         // When I check if it exists
         boolean exists = client.dataObject().doesRootObjectExists(bName);
@@ -81,6 +83,8 @@ class DataObjectApplicationTests {
     @Test
     public void DoesObjectExist_RootObjectAndObjectExist_Exists() {
         // Given an existing object
+        assertTrue(client.dataObject().doesObjectExists(EXISTING_OBJECT_KEY));
+
         // When I check if it exists
         boolean exists = client.dataObject().doesObjectExists(EXISTING_OBJECT_KEY);
 
@@ -90,7 +94,8 @@ class DataObjectApplicationTests {
 
     @Test
     public void DoesObjectExist_RootObjectExistObjectDoesntExist_DoesntExist() {
-        // Given an existing object
+        // Given a not existing object
+        assertFalse(client.dataObject().doesObjectExists(NON_EXISTING_OBJECT_KEY));
 
         // When I check if it exists
         boolean exists = client.dataObject().doesObjectExists(NON_EXISTING_OBJECT_KEY);
@@ -104,10 +109,11 @@ class DataObjectApplicationTests {
     @Test
     public void UploadObject_RootObjectExistsNewObject_Uploaded() throws IOException, NoObjectFoundException {
         // Given a local file
-        File originFile = new File(classLoader.getResource(TEST_FILE_1_NAME).getFile());
-        client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, originFile);
+        File originFile = new File(Objects.requireNonNull(classLoader.getResource(TEST_FILE_1_NAME)).getFile());
+        assertNotNull(originFile);
 
         // When I create an object on the object storage
+        client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, originFile);
         File outputFile = new File(OUTPUT_FILE_NAME);
         FileOutputStream outputStream = new FileOutputStream(outputFile);
         outputStream.write(client.dataObject().get(OBJECT_CAN_BE_CREATED_KEY));
@@ -120,19 +126,22 @@ class DataObjectApplicationTests {
     @Test
     public void UploadObject_RootObjectExistsObjectExists_Uploaded() throws IOException, NoObjectFoundException {
         // Given two files
-        client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, new File(Objects.requireNonNull(classLoader.getResource(TEST_FILE_1_NAME)).getFile()));
-        client.dataObject().update(OBJECT_CAN_BE_CREATED_KEY, new File(Objects.requireNonNull(classLoader.getResource(TEST_FILE_2_NAME)).getFile()));
-
-        // When I create a fist first file, then want to replace it by another file
         File originFile = new File(Objects.requireNonNull(classLoader.getResource(TEST_FILE_1_NAME)).getFile());
+        File replacingFile = new File(Objects.requireNonNull(classLoader.getResource(TEST_FILE_2_NAME)).getFile());
+        assertNotNull(replacingFile);
+        assertNotNull(replacingFile);
+
+        // When I create a first file, then want to replace it by another file
         client.dataObject().create(OBJECT_CAN_BE_CREATED_KEY, originFile);
+        client.dataObject().update(OBJECT_CAN_BE_CREATED_KEY, replacingFile);
+
         File outputFile = new File(OUTPUT_FILE_NAME);
         FileOutputStream outputStream = new FileOutputStream(outputFile);
         outputStream.write(client.dataObject().get(OBJECT_CAN_BE_CREATED_KEY));
         outputStream.close();
 
         // Then the file should be the same as the second file's content
-        assertEquals(Files.mismatch(originFile.toPath(), outputFile.toPath()), -1L);
+        assertEquals(Files.mismatch(replacingFile.toPath(), outputFile.toPath()), -1L);
     }
     // create object end
 
@@ -140,6 +149,7 @@ class DataObjectApplicationTests {
     @Test
     public void DownloadObject_ObjectExists_Downloaded() throws NoObjectFoundException {
         // Given an existing object on the object storage
+        assertTrue(client.dataObject().doesObjectExists(EXISTING_OBJECT_KEY));
 
         // When I ask to get the object
         byte[] object = client.dataObject().get(EXISTING_OBJECT_KEY);
@@ -151,6 +161,7 @@ class DataObjectApplicationTests {
     @Test
     public void DownloadObject_ObjectDoesntExist_ThrowException() {
         // Given a non-existing object on the object storage
+        assertFalse(client.dataObject().doesObjectExists(NON_EXISTING_OBJECT_KEY));
         // When I ask to get the object
         // Then I should get an exception
         assertThrows(NoObjectFoundException.class, () -> client.dataObject().get(NON_EXISTING_OBJECT_KEY));
@@ -160,17 +171,20 @@ class DataObjectApplicationTests {
     // remove object
     @Test
     public void RemoveObject_SingleObjectExists_Removed() throws NoObjectFoundException {
-        // Given having an existing object
+        // Given an existing object on the storage
+        assertTrue(client.dataObject().doesObjectExists(EXISTING_OBJECT_KEY));
+
         // When I want to delete it
         client.dataObject().delete(EXISTING_OBJECT_KEY);
 
         // Then it should be deleted
-        assertThrows(NoObjectFoundException.class, () -> client.dataObject().get(OBJECT_CAN_BE_CREATED_KEY));
+        assertFalse(client.dataObject().doesObjectExists(EXISTING_OBJECT_KEY));
     }
 
     @Test
     public void RemoveObject_SingleObjectDoesntExist_ThrowException() {
         // Given having a non-existing object
+        assertFalse(client.dataObject().doesObjectExists(NON_EXISTING_OBJECT_KEY));
         // When I try to delete it
         // Then it should throw an exception
         assertThrows(NoObjectFoundException.class, () -> client.dataObject().delete(NON_EXISTING_OBJECT_KEY));
@@ -180,7 +194,8 @@ class DataObjectApplicationTests {
     // publish object
     @Test
     public void PublishObject_ObjectExists_Published() throws IOException, NoObjectFoundException {
-        // Given an existing object
+        // Given an existing object on the storage
+        assertTrue(client.dataObject().doesObjectExists(EXISTING_OBJECT_KEY));
         // When I want to publish it
         // Then I should get a private link to the object
         URL url = new URL(client.dataObject().publish(EXISTING_OBJECT_KEY));
@@ -191,12 +206,18 @@ class DataObjectApplicationTests {
 
     @Test
     public void PublishObject_ObjectDoesntExist_ThrowException() throws IOException {
+        // Given a non exiting file on the storage
+        assertFalse(client.dataObject().doesObjectExists(NON_EXISTING_OBJECT_KEY));
+        // When I want to publish it
+        // Then it should throw an exception
         assertThrows(NoObjectFoundException.class, () -> client.dataObject().publish(NON_EXISTING_OBJECT_KEY));
     }
     // publish object end
     @Nested
     class TestWithListObject{
         static String folderName = "testFolder";
+
+        static int nbObjects = 4;
         static String[] objectNames = {
                 folderName + "/test1.jpg",
                 folderName + "/test2.jpg",
@@ -215,6 +236,7 @@ class DataObjectApplicationTests {
         @Test
         public void ListObject_FolderObjectExists_Listed() {
             // Given having N objects
+            assertEquals(objectNames.length, nbObjects);
             // When I want to list them
             // Then I should get N objects
             var list = client.dataObject().listObjects(folderName);
@@ -224,6 +246,7 @@ class DataObjectApplicationTests {
         @Test
         public void RemoveObject_FolderObjectExistWithRecursiveOption_Removed() throws NoObjectFoundException {
             // Given having N objects
+            assertEquals(objectNames.length, nbObjects);
             // When I want to delete them
             // Then I should get 0 objects
             client.dataObject().deleteFolder(folderName);
@@ -234,6 +257,7 @@ class DataObjectApplicationTests {
         @Test
         public void RemoveObject_FolderObjectNotExist_ThrowException() {
             // Given having a non-existing folder
+            assertFalse(client.dataObject().doesObjectExists("thisFolderDoesNotExist"));
             // When I try to delete it
             // Then it should throw an exception
             assertThrows(NoObjectFoundException.class, () -> client.dataObject().deleteFolder("thisFolderDoesNotExist"));
