@@ -30,7 +30,7 @@ public class App
 
     private JsonNode createBucket() throws UnirestException {
         String url = DATA_OBJECT_URL + "/root-object";
-        var response = Unirest.put(url).asJson();
+        var response = Unirest.post(url).asJson();
         return response.getBody();
     }
 

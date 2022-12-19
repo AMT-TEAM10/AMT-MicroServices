@@ -15,7 +15,7 @@
 	<description>Data object microservice for AMT Project</description>
 	<properties>
 		<java.version>17</java.version>
-		<start-class>ch.heig.amtteam10.service.dataobject.DataObjectApplication</start-class>
+		<start-class>ch.heig.amtteam10.dataobject.DataObjectApplication</start-class>
 	</properties>
 	<dependencies>
 		<dependency>

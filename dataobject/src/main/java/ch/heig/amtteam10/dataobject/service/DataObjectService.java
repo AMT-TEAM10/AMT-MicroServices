@@ -1,18 +1,14 @@
-package ch.heig.amtteam10.service.dataobject.service;
+package ch.heig.amtteam10.dataobject.service;
 
 import ch.heig.amtteam10.core.Env;
 import ch.heig.amtteam10.core.cloud.AWSClient;
 import ch.heig.amtteam10.core.exceptions.BucketAlreadyCreatedException;
 import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
-import ch.heig.amtteam10.service.dataobject.service.storage.StorageService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.services.s3.model.BucketAlreadyExistsException;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 
 @Service
 public class DataObjectService {

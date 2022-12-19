@@ -1,4 +1,4 @@
-package ch.heig.amtteam10.service.dataobject;
+package ch.heig.amtteam10.dataobject;
 
 import ch.heig.amtteam10.core.cloud.AWSClient;
 import ch.heig.amtteam10.core.cloud.AWSDataObjectHelper;
