@@ -43,7 +43,7 @@ public interface IDataObjectHelper {
      * @param objectName name of object
      * @param rawContent content to upload
      */
-    void create(String objectName, String rawContent);
+    void create(String objectName, byte[] bytes);
 
     /**
      * Update object on an object storage manager

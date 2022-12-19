@@ -1,4 +1,4 @@
-package ch.heig.amtteam10.service.dataobject;
+package ch.heig.amtteam10.dataobject;
 
 import ch.heig.amtteam10.core.cloud.AWSClient;
 import ch.heig.amtteam10.core.cloud.AWSDataObjectHelper;
@@ -46,7 +46,7 @@ class DataObjectApplicationTests {
     @BeforeEach
     public void setup() throws NoObjectFoundException {
         if (!client.dataObject().doesObjectExists(EXISTING_OBJECT_KEY)) {
-            client.dataObject().create(EXISTING_OBJECT_KEY, RAW_CONTENT_TEST);
+            client.dataObject().create(EXISTING_OBJECT_KEY, RAW_CONTENT_TEST.getBytes());
         }
         if (client.dataObject().doesObjectExists(OBJECT_CAN_BE_CREATED_KEY)) {
             client.dataObject().delete(OBJECT_CAN_BE_CREATED_KEY);
@@ -229,7 +229,7 @@ class DataObjectApplicationTests {
         public static void init() {
             // create N objects
             for (String objectName : objectNames) {
-                client.dataObject().create(objectName, RAW_CONTENT_TEST);
+                client.dataObject().create(objectName, RAW_CONTENT_TEST.getBytes());
             }
         }
 
