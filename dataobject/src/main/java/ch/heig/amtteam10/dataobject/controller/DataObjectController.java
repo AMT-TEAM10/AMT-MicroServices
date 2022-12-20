@@ -11,7 +11,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+// TODO: delete bucket
+// TODO: objectName in query for paths
+
 @RestController
+@RequestMapping("v1/data-object")
 public class DataObjectController {
     private final DataObjectService dataObjectService;
 
@@ -20,7 +24,7 @@ public class DataObjectController {
         this.dataObjectService = dataObjectService;
     }
 
-    @PostMapping("/root-object")
+    @PostMapping("/root-objects")
     public ResponseEntity<String> createRootObject() {
         if (dataObjectService.createRootObject()) {
             return ResponseEntity.status(HttpStatus.OK).body("Bucket created\n");
@@ -28,7 +32,9 @@ public class DataObjectController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bucket already exists\n");
     }
 
-    @GetMapping("/object/{objectName}")
+
+
+    @GetMapping("/objects/{objectName}")
     public ResponseEntity index(@PathVariable String objectName) {
         if (objectName.isEmpty()) {
             return ResponseEntity.badRequest().body(new APIError(HttpStatus.BAD_REQUEST, "Missing objectName"));
@@ -51,7 +57,7 @@ public class DataObjectController {
                 .body(resource);
     }
 
-    @PostMapping("/object/{objectName}")
+    @PostMapping("/objects/{objectName}")
     public ResponseEntity create(@PathVariable String objectName, @RequestParam("file") MultipartFile file) {
         if (objectName.isEmpty()) {
             return ResponseEntity.badRequest().body(new APIError(HttpStatus.BAD_REQUEST, "Missing objectName"));
@@ -71,12 +77,12 @@ public class DataObjectController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PatchMapping("/object/{objectName}")
+    @PatchMapping("/objects/{objectName}")
     public ResponseEntity update(@PathVariable String objectName, @RequestParam("file") MultipartFile file) {
         return create(objectName, file);
     }
 
-    @DeleteMapping("/object/{objectName}")
+    @DeleteMapping("/objects/{objectName}")
     public ResponseEntity delete(@PathVariable String objectName) throws NoObjectFoundException {
         if (objectName.isEmpty()) {
             return ResponseEntity.badRequest().body(new APIError(HttpStatus.BAD_REQUEST, "Missing objectName"));
@@ -86,7 +92,7 @@ public class DataObjectController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/object/{objectName}/publish")
+    @GetMapping("/objects/{objectName}/publish")
     public ResponseEntity publish(@PathVariable String objectName) {
         if (objectName.isEmpty()) {
             return ResponseEntity.badRequest().body(new APIError(HttpStatus.BAD_REQUEST, "Missing objectName"));

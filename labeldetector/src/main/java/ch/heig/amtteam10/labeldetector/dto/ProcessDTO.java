@@ -1,10 +1,10 @@
-package ch.heig.amtteam10.labeldetector.dao;
+package ch.heig.amtteam10.labeldetector.DTO;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
-public record ProcessDAO(
+public record ProcessDTO(
         @NotBlank(message = "imageUrl is mandatory")
         String imageUrl,
         @Min(value = 1, message = "maxLabels must be greater than 0")
