@@ -145,7 +145,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
     }
 
     @Override
-    public String publish(String objectName) throws NoObjectFoundException {
+    public String publish(String objectName, int expirationTime) throws NoObjectFoundException {
         if (!doesObjectExists(objectName)) {
             throw new NoObjectFoundException(objectName);
         }
@@ -160,13 +160,19 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
                 .build();
 
         GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(PUBLIC_LINK_VALIDITY_DURATION))
+                .signatureDuration(Duration.ofMinutes(expirationTime))
                 .getObjectRequest(getObjectRequest)
                 .build();
 
         PresignedGetObjectRequest presignedGetObjectRequest = presigner.presignGetObject(getObjectPresignRequest);
         return presignedGetObjectRequest.url().toString();
     }
+
+    @Override
+    public String publish(String objectName) throws NoObjectFoundException {
+        return publish(objectName, PUBLIC_LINK_VALIDITY_DURATION);
+    }
+
 
     @Override
     public boolean doesObjectExists(String objectName) {

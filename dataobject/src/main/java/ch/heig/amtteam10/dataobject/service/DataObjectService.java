@@ -25,8 +25,8 @@ public class DataObjectService {
         AWSClient.getInstance().dataObject().delete(objectName);
     }
 
-    public String getPublishLink(String objectName) throws NoObjectFoundException {
-        return AWSClient.getInstance().dataObject().publish(objectName);
+    public String getPublishLink(String objectName, int expirationTime) throws NoObjectFoundException {
+        return AWSClient.getInstance().dataObject().publish(objectName, expirationTime);
     }
 
     public boolean createRootObject() {

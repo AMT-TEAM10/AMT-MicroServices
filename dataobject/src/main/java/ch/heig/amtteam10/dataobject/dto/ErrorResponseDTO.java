@@ -1,11 +1,11 @@
-package ch.heig.amtteam10.dataobject.controller.error;
+package ch.heig.amtteam10.dataobject.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
-public class APIError {
+class APIError {
     @JsonFormat
     private HttpStatus status;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
@@ -28,4 +28,21 @@ public class APIError {
         this(status);
         this.message = message;
     }
+}
+
+public class ErrorResponseDTO extends ResponseDTO {
+    private final APIError error;
+
+    public ErrorResponseDTO(
+            HttpStatus status,
+            String message
+    ) {
+        super(false, message);
+        this.error = new APIError(status, message);
+    }
+
+    public APIError error() {
+        return error;
+    }
+
 }

@@ -67,8 +67,18 @@ public interface IDataObjectHelper {
      */
     void deleteFolder(String folderName) throws NoObjectFoundException;
 
+
     /**
      * Get a private URL to an object
+     *
+     * @param objectName name of object
+     * @param expirationTime expiration time of the URL
+     * @return URL to access object
+     */
+    String publish(String objectName, int expirationTime) throws NoObjectFoundException;
+
+    /**
+     * Get a public URL to an object with a default expiration time (env variable)
      *
      * @param objectName name of object
      * @return URL to access object
