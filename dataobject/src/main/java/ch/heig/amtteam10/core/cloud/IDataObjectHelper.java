@@ -4,6 +4,7 @@ import ch.heig.amtteam10.core.exceptions.BucketAlreadyCreatedException;
 import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -41,9 +42,9 @@ public interface IDataObjectHelper {
      * Create object (string) on an object storage manager
      *
      * @param objectName name of object
-     * @param rawContent content to upload
+     * @param bytes content to upload
      */
-    void create(String objectName, byte[] bytes);
+    void create(String objectName, byte[] bytes, String contentType);
 
     /**
      * Update object on an object storage manager
@@ -75,7 +76,7 @@ public interface IDataObjectHelper {
      * @param expirationTime expiration time of the URL
      * @return URL to access object
      */
-    String publish(String objectName, int expirationTime) throws NoObjectFoundException;
+    String publish(String objectName, Duration expirationTime) throws NoObjectFoundException;
 
     /**
      * Get a public URL to an object with a default expiration time (env variable)
@@ -84,6 +85,8 @@ public interface IDataObjectHelper {
      * @return URL to access object
      */
     String publish(String objectName) throws NoObjectFoundException;
+
+    String objectContentType(String objectName) throws NoObjectFoundException;
 
     /**
      * Check if a root object

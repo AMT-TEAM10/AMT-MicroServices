@@ -11,6 +11,7 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import java.io.File;
+import java.net.URLConnection;
 import java.time.Duration;
 import java.util.List;
 import java.util.logging.Level;
@@ -78,6 +79,24 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
     }
 
     @Override
+    public String objectContentType(String objectName) throws NoObjectFoundException {
+        if (!doesRootObjectExists(Env.get("AWS_BUCKET_NAME"))) {
+            throw new NoObjectFoundException("Bucket not found");
+        }
+
+        if (!doesObjectExists(objectName)) {
+            throw new NoObjectFoundException("Object not found");
+        }
+        //use headObject to get the content type
+        HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
+                .bucket(Env.get("AWS_BUCKET_NAME"))
+                .key(objectName)
+                .build();
+        HeadObjectResponse headObjectResponse = AWSClient.getInstance().getS3Client().headObject(headObjectRequest);
+        return headObjectResponse.contentType();
+    }
+
+    @Override
     public void create(String objectName, File file) {
         if (!doesRootObjectExists(Env.get("AWS_BUCKET_NAME"))) {
             throw new RuntimeException("Bucket not found");
@@ -86,12 +105,13 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(Env.get("AWS_BUCKET_NAME"))
                 .key(objectName)
+                .contentType(URLConnection.guessContentTypeFromName(file.getName()))
                 .build();
         AWSClient.getInstance().getS3Client().putObject(objectRequest, RequestBody.fromFile(file));
     }
 
     @Override
-    public void create(String objectName,  byte[] bytes) {
+    public void create(String objectName, byte[] bytes, String contentType) {
         if (!doesRootObjectExists(Env.get("AWS_BUCKET_NAME"))) {
             throw new RuntimeException("Bucket not found");
         }
@@ -99,6 +119,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(Env.get("AWS_BUCKET_NAME"))
                 .key(objectName)
+                .contentType(contentType)
                 .build();
         AWSClient.getInstance().getS3Client().putObject(objectRequest, RequestBody.fromBytes(bytes));
     }
@@ -145,12 +166,13 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
     }
 
     @Override
-    public String publish(String objectName, int expirationTime) throws NoObjectFoundException {
+    public String publish(String objectName, Duration expirationTime) throws NoObjectFoundException {
         if (!doesObjectExists(objectName)) {
             throw new NoObjectFoundException(objectName);
         }
 
         S3Presigner presigner = S3Presigner.builder()
+                .region(AWSClient.getInstance().getRegion())
                 .credentialsProvider(AWSClient.getInstance().getCredentials())
                 .build();
 
@@ -160,7 +182,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
                 .build();
 
         GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(expirationTime))
+                .signatureDuration(expirationTime)
                 .getObjectRequest(getObjectRequest)
                 .build();
 
@@ -170,7 +192,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
 
     @Override
     public String publish(String objectName) throws NoObjectFoundException {
-        return publish(objectName, PUBLIC_LINK_VALIDITY_DURATION);
+        return publish(objectName, Duration.ofMinutes(PUBLIC_LINK_VALIDITY_DURATION));
     }
 
 
