@@ -4,7 +4,7 @@
 ## API Usage
 
 ### Process an image
-> POST /process
+> POST /v1/labels
 
 #### Request body as Content-Type: application/json
 ```json

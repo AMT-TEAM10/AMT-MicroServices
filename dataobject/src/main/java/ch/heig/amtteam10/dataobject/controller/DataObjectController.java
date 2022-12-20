@@ -15,7 +15,7 @@ import java.io.IOException;
 // TODO: objectName in query for paths
 
 @RestController
-@RequestMapping("v1/data-object")
+@RequestMapping("v1")
 public class DataObjectController {
     private final DataObjectService dataObjectService;
 
@@ -39,7 +39,7 @@ public class DataObjectController {
     }
 
 
-    @GetMapping("/objects/{objectName}")
+    @GetMapping("/objects/{objectName:.+}")
     public ResponseEntity index(@PathVariable String objectName) {
         if (objectName.isEmpty()) {
             return ResponseEntity.badRequest().body(new APIError(HttpStatus.BAD_REQUEST, "Missing objectName"));
@@ -62,7 +62,7 @@ public class DataObjectController {
                 .body(resource);
     }
 
-    @PostMapping("/objects/{objectName}")
+    @PostMapping("/objects/{objectName:.+}")
     public ResponseEntity create(@PathVariable String objectName, @RequestParam("file") MultipartFile file) {
         if (objectName.isEmpty()) {
             return ResponseEntity.badRequest().body(new APIError(HttpStatus.BAD_REQUEST, "Missing objectName"));
@@ -82,12 +82,12 @@ public class DataObjectController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PatchMapping("/objects/{objectName}")
+    @PatchMapping("/objects/{objectName:.+}")
     public ResponseEntity update(@PathVariable String objectName, @RequestParam("file") MultipartFile file) {
         return create(objectName, file);
     }
 
-    @DeleteMapping("/objects/{objectName}")
+    @DeleteMapping("/objects/{objectName:.+}")
     public ResponseEntity delete(@PathVariable String objectName) throws NoObjectFoundException {
         if (objectName.isEmpty()) {
             return ResponseEntity.badRequest().body(new APIError(HttpStatus.BAD_REQUEST, "Missing objectName"));
@@ -97,7 +97,7 @@ public class DataObjectController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/objects/{objectName}/publish")
+    @GetMapping("/objects/{objectName:.+}/link")
     public ResponseEntity publish(@PathVariable String objectName) {
         if (objectName.isEmpty()) {
             return ResponseEntity.badRequest().body(new APIError(HttpStatus.BAD_REQUEST, "Missing objectName"));

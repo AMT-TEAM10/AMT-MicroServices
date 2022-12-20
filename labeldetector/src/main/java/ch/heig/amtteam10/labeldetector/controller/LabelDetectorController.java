@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("v1/label-detector")
+@RequestMapping("v1")
 public class LabelDetectorController {
 
     private LabelDetectorService labelDetectorService;
