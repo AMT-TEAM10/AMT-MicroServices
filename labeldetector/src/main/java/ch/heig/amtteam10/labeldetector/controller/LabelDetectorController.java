@@ -1,6 +1,5 @@
 package ch.heig.amtteam10.labeldetector.controller;
 
-import ch.heig.amtteam10.labeldetector.DTO.ProcessDTO;
 import ch.heig.amtteam10.labeldetector.core.Label;
 import ch.heig.amtteam10.labeldetector.core.exceptions.FailDownloadFileException;
 import ch.heig.amtteam10.labeldetector.service.LabelDetectorService;
@@ -21,7 +20,7 @@ public class LabelDetectorController {
     }
 
     @PostMapping("/labels")
-    public @ResponseBody ResponseEntity<Label[]> processImage(@Valid @RequestBody ProcessDTO params) {
+    public @ResponseBody ResponseEntity<Label[]> processImage(@Valid @RequestBody ch.heig.amtteam10.labeldetector.DTO.ProcessDTO params) {
         try {
             Label[] labels = labelDetectorService.executeLabelDetection(params);
             return ResponseEntity.ok(labels);

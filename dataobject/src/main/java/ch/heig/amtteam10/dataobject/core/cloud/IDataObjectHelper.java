@@ -1,4 +1,4 @@
-package ch.heig.amtteam10.core.cloud;
+package ch.heig.amtteam10.dataobject.core.cloud;
 
 import ch.heig.amtteam10.core.exceptions.BucketAlreadyCreatedException;
 import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
@@ -41,7 +41,6 @@ public interface IDataObjectHelper {
      * Create object (string) on an object storage manager
      *
      * @param objectName name of object
-     * @param rawContent content to upload
      */
     void create(String objectName, byte[] bytes);
 

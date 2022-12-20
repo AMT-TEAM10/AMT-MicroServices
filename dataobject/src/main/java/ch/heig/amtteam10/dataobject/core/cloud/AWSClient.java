@@ -1,4 +1,4 @@
-package ch.heig.amtteam10.core.cloud;
+package ch.heig.amtteam10.dataobject.core.cloud;
 
 import ch.heig.amtteam10.core.Env;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;

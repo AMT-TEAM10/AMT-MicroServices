@@ -1,4 +1,4 @@
-package ch.heig.amtteam10.core.cloud;
+package ch.heig.amtteam10.dataobject.core.cloud;
 
 /**
  * Defines a cloud cli

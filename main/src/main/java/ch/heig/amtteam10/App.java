@@ -8,13 +8,8 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 import java.io.InputStream;
 
-/**
- * Hello world!
- *
- */
 public class App
 {
-
     private static final String LABEL_DETECTOR_URL = "http://localhost:8080";
     private static final String DATA_OBJECT_URL = "http://localhost:8081";
 
@@ -43,13 +38,10 @@ public class App
     }
 
     private String publishObject(String objectName) throws UnirestException {
-        String url = DATA_OBJECT_URL + "/object/" + objectName + "/publish";
+        String url = DATA_OBJECT_URL + "/object/" + objectName + "/link";
         var response = Unirest.get(url).asString();
         return response.getBody();
     }
-
-
-
 
     public void scenario1() throws UnirestException, JsonProcessingException {
         System.out.println("Creating bucket...");

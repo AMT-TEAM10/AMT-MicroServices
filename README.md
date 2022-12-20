@@ -13,7 +13,7 @@ Pour utiliser cette application, il nécessaire d'avoir installé sur votre mach
 
 Voir [Wiki](https://github.com/AMT-TEAM10/AMT-Rekognition/wiki/D%C3%A9pendances) pour plus d'informations.
 
-Vous devez également avoir à disposition : un Bucket AWS S3, ainsi que les clés d'accès publique et privée y permettant l'accès.
+Vous devez également avoir à disposition : un Bucket AWS S3, ainsi que les clés d'accès publiques et privées y permettant l'accès.
 
 ## Configuration
 
@@ -45,32 +45,25 @@ Les dépendances détaillées du projet se trouvent [ici](https://github.com/AMT
 Pour installer les dépendances, entrer la commande suivante :
 
 ```bash
+$ cd <dataobject | labeldetector>
 $ mvn install -DskipTests
 ```
 
 ### Exécution (en local)
 
-Pour générer un exécutable, entrer la commande suivante:
-
+Pour démarrer l'application web en local, exécutez la commande suivante :
 ```bash
-$  mvn package
-```
-
-Pour exécuter le programme, copiez le fichier `./target/AMT-Rekognition-1.0-SNAPSHOT-jar-with-dependencies.jar`
-`.env` et `main.jpeg` à l'endroit souhaité pour l'exécution, puis entrer la commande suivante :
-
-```bash
-$ java -jar AMT-Rekognition-1.0-SNAPSHOT-jar-with-dependencies.jar
+$ mvn spring-boot:run
 ```
 
 > **Warning**
-> Il est important d'avoir copié les autres fichiers au même niveau que l'exécutable
+> Il est important d'avoir placé et rempli le fichier .env à ce moment-là.
 
 ### Exécution (sur l'instance AWS)
 
 Nous avons déjà déployé manuellement tous les fichiers nécessaires pour exécuter l'application sur le serveur de production.
 
-Après s'être connecté sur l'instance, entrer les commandes suivantes:
+Après s'être connecté sur l'instance, entrer les commandes suivantes :
 
 ```bash
 $ cd app
@@ -100,3 +93,14 @@ $ mvn test -Dtest="testName"
 # Directives
 
 Toute documentation relative aux practices, dépendances, architecture se trouvent dans notre [Wiki](https://github.com/AMT-TEAM10/AMT-Rekognition/wiki).
+
+# API des microservices
+
+La documentation d'utilisation des API des deux microservices se trouvent dans le readme de chaque projet respectif.
+
+DataObject: [Documentation API](./dataobject/README.md)
+LabelDetector: [Documentation API](./labeldetector/README.md)
+
+# Docker
+
+TODO expliquer ce qu'on a fait avec Docker

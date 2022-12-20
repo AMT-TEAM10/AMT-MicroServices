@@ -32,6 +32,11 @@ public class DataObjectController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bucket already exists\n");
     }
 
+    @DeleteMapping("/root-objects/{objectName:.+}")
+    public ResponseEntity<?> deleteRootObject(@PathVariable String objectName) {
+        // TODO
+        return null;
+    }
 
 
     @GetMapping("/objects/{objectName}")
