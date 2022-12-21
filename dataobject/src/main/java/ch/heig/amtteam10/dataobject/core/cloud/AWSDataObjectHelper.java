@@ -1,8 +1,8 @@
 package ch.heig.amtteam10.dataobject.core.cloud;
 
 import ch.heig.amtteam10.core.Env;
-import ch.heig.amtteam10.core.exceptions.BucketAlreadyCreatedException;
-import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
+import ch.heig.amtteam10.dataobject.core.exceptions.BucketAlreadyCreatedException;
+import ch.heig.amtteam10.dataobject.core.exceptions.NoObjectFoundException;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.model.*;

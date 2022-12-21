@@ -1,18 +1,15 @@
 package ch.heig.amtteam10.dataobject.controller;
 
-import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
+import ch.heig.amtteam10.dataobject.core.exceptions.NoObjectFoundException;
 import ch.heig.amtteam10.dataobject.dto.ErrorResponseDTO;
 import ch.heig.amtteam10.dataobject.dto.LinkDTO;
 import ch.heig.amtteam10.dataobject.dto.ResponseDTO;
 import ch.heig.amtteam10.dataobject.service.DataObjectService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.HandlerMapping;
 
 import java.io.IOException;
 import java.time.Duration;

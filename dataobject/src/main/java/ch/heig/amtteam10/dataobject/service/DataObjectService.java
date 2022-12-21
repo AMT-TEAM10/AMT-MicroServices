@@ -1,8 +1,8 @@
 package ch.heig.amtteam10.dataobject.service;
 
 import ch.heig.amtteam10.core.Env;
-import ch.heig.amtteam10.core.exceptions.BucketAlreadyCreatedException;
-import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
+import ch.heig.amtteam10.dataobject.core.exceptions.BucketAlreadyCreatedException;
+import ch.heig.amtteam10.dataobject.core.exceptions.NoObjectFoundException;
 import ch.heig.amtteam10.dataobject.core.cloud.AWSClient;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;

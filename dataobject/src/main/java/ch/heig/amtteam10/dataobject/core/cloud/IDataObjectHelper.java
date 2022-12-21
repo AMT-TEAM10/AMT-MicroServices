@@ -1,7 +1,7 @@
 package ch.heig.amtteam10.dataobject.core.cloud;
 
-import ch.heig.amtteam10.core.exceptions.BucketAlreadyCreatedException;
-import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
+import ch.heig.amtteam10.dataobject.core.exceptions.BucketAlreadyCreatedException;
+import ch.heig.amtteam10.dataobject.core.exceptions.NoObjectFoundException;
 
 import java.io.File;
 import java.time.Duration;
@@ -20,7 +20,7 @@ public interface IDataObjectHelper {
      *
      * @param rootObjectName root object unique name
      */
-    void createRootObject(String rootObjectName) throws BucketAlreadyCreatedException;
+    void createRootObject(String rootObjectName) throws BucketAlreadyCreatedException, BucketAlreadyCreatedException;
 
     /**
      * Get an object stored on an object storage manager
@@ -28,7 +28,7 @@ public interface IDataObjectHelper {
      * @param objectName name of object
      * @return object as byte array
      */
-    byte[] get(String objectName) throws NoObjectFoundException;
+    byte[] get(String objectName) throws NoObjectFoundException, NoObjectFoundException;
 
     /**
      * Create object (file) on an object storage manager
