@@ -1,9 +1,10 @@
 package ch.heig.amtteam10.dataobject.core.cloud;
 
-import ch.heig.amtteam10.core.exceptions.BucketAlreadyCreatedException;
-import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
+import ch.heig.amtteam10.dataobject.core.exceptions.BucketAlreadyCreatedException;
+import ch.heig.amtteam10.dataobject.core.exceptions.NoObjectFoundException;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ public interface IDataObjectHelper {
      *
      * @param rootObjectName root object unique name
      */
-    void createRootObject(String rootObjectName) throws BucketAlreadyCreatedException;
+    void createRootObject(String rootObjectName) throws BucketAlreadyCreatedException, BucketAlreadyCreatedException;
 
     /**
      * Get an object stored on an object storage manager
@@ -27,7 +28,7 @@ public interface IDataObjectHelper {
      * @param objectName name of object
      * @return object as byte array
      */
-    byte[] get(String objectName) throws NoObjectFoundException;
+    byte[] get(String objectName) throws NoObjectFoundException, NoObjectFoundException;
 
     /**
      * Create object (file) on an object storage manager
@@ -41,8 +42,9 @@ public interface IDataObjectHelper {
      * Create object (string) on an object storage manager
      *
      * @param objectName name of object
+     * @param bytes content to upload
      */
-    void create(String objectName, byte[] bytes);
+    void create(String objectName, byte[] bytes, String contentType);
 
     /**
      * Update object on an object storage manager
@@ -62,18 +64,29 @@ public interface IDataObjectHelper {
     /**
      * Delete all objects starting with prefix.
      * Because there are no folders in object storage, we use prefix to simulate folders.
-     *
      * @param folderName name of folder
      */
     void deleteFolder(String folderName) throws NoObjectFoundException;
+
 
     /**
      * Get a private URL to an object
      *
      * @param objectName name of object
+     * @param expirationTime expiration time of the URL
+     * @return URL to access object
+     */
+    String publish(String objectName, Duration expirationTime) throws NoObjectFoundException;
+
+    /**
+     * Get a public URL to an object with a default expiration time (env variable)
+     *
+     * @param objectName name of object
      * @return URL to access object
      */
     String publish(String objectName) throws NoObjectFoundException;
+
+    String objectContentType(String objectName) throws NoObjectFoundException;
 
     /**
      * Check if a root object
@@ -93,7 +106,6 @@ public interface IDataObjectHelper {
     /**
      * Get all objects starting with prefix.
      * Because there are no folders in object storage, we use prefix to simulate folders.
-     *
      * @param prefix prefix of objects
      * @return list of objects name
      */

@@ -1,6 +1,6 @@
 package ch.heig.amtteam10.labeldetector.service;
 
-import ch.heig.amtteam10.labeldetector.DTO.ProcessDTO;
+import ch.heig.amtteam10.labeldetector.dto.ProcessDTO;
 import ch.heig.amtteam10.labeldetector.core.AWSClient;
 import ch.heig.amtteam10.labeldetector.core.Label;
 import ch.heig.amtteam10.labeldetector.core.exceptions.FailDownloadFileException;

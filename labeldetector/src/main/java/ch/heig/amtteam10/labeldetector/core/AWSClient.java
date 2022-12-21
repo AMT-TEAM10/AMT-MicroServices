@@ -1,6 +1,5 @@
 package ch.heig.amtteam10.labeldetector.core;
 
-import ch.heig.amtteam10.labeldetector.Env;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;

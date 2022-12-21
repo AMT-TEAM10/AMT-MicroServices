@@ -1,6 +1,6 @@
 package ch.heig.amtteam10.labeldetector;
 
-import ch.heig.amtteam10.labeldetector.DTO.ProcessDTO;
+import ch.heig.amtteam10.labeldetector.dto.ProcessDTO;
 import ch.heig.amtteam10.labeldetector.controller.LabelDetectorController;
 import ch.heig.amtteam10.labeldetector.service.LabelDetectorService;
 import org.junit.jupiter.api.BeforeAll;
@@ -37,7 +37,7 @@ class LabelDetectorControllerTests {
 
         //THEN Got a success response.
         assertEquals(response.getStatusCode(), HttpStatusCode.valueOf(200));
-        assertEquals(Objects.requireNonNull(response.getBody()).length, 5);
+        assertEquals(Objects.requireNonNull(response.getBody()).count(), 5);
     }
 
     @Test

@@ -1,7 +1,9 @@
 package ch.heig.amtteam10.dataobject.controller;
 
-import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
-import ch.heig.amtteam10.dataobject.controller.error.APIError;
+import ch.heig.amtteam10.dataobject.core.exceptions.NoObjectFoundException;
+import ch.heig.amtteam10.dataobject.dto.ErrorResponseDTO;
+import ch.heig.amtteam10.dataobject.dto.LinkDTO;
+import ch.heig.amtteam10.dataobject.dto.ResponseDTO;
 import ch.heig.amtteam10.dataobject.service.DataObjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -10,8 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
-// TODO: delete bucket
 // TODO: objectName in query for paths
 
 @RestController
@@ -25,35 +28,30 @@ public class DataObjectController {
     }
 
     @PostMapping("/root-objects")
-    public ResponseEntity<String> createRootObject() {
+    public ResponseEntity<ResponseDTO> createRootObject() {
         if (dataObjectService.createRootObject()) {
-            return ResponseEntity.status(HttpStatus.OK).body("Bucket created\n");
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseDTO(true, "Root object created"));
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bucket already exists\n");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDTO(false, "Root object already exists"));
     }
 
-    @DeleteMapping("/root-objects/{objectName:.+}")
-    public ResponseEntity<?> deleteRootObject(@PathVariable String objectName) {
-        // TODO
-        return null;
-    }
-
-
-    @GetMapping("/objects/{objectName:.+}")
-    public ResponseEntity index(@PathVariable String objectName) {
+    @GetMapping("/objects/{objectName}")
+    public ResponseEntity<?> index(@PathVariable String objectName) {
         if (objectName.isEmpty()) {
-            return ResponseEntity.badRequest().body(new APIError(HttpStatus.BAD_REQUEST, "Missing objectName"));
+            return ResponseEntity.badRequest().body(new ErrorResponseDTO(HttpStatus.BAD_REQUEST, "Missing objectName"));
         }
 
         ByteArrayResource resource;
+        String contentType;
         try {
             resource = dataObjectService.getObject(objectName);
+            contentType = dataObjectService.getObjectType(objectName);
         } catch (NoObjectFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDTO(HttpStatus.NOT_FOUND, "Object not found"));
         }
 
         return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .contentType(MediaType.parseMediaType(contentType))
                 .contentLength(resource.contentLength())
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         ContentDisposition.attachment()
@@ -62,52 +60,60 @@ public class DataObjectController {
                 .body(resource);
     }
 
-    @PostMapping("/objects/{objectName:.+}")
-    public ResponseEntity create(@PathVariable String objectName, @RequestParam("file") MultipartFile file) {
+    @PostMapping("/objects/{objectName}")
+    public ResponseEntity<ResponseDTO> create(@PathVariable String objectName, @RequestParam("file") MultipartFile file) {
         if (objectName.isEmpty()) {
-            return ResponseEntity.badRequest().body(new APIError(HttpStatus.BAD_REQUEST, "Missing objectName"));
+            return ResponseEntity.badRequest().body(new ErrorResponseDTO(HttpStatus.BAD_REQUEST, "Missing objectName"));
         }
         if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body(new APIError(HttpStatus.BAD_REQUEST, "Missing file"));
+            return ResponseEntity.badRequest().body(new ErrorResponseDTO(HttpStatus.BAD_REQUEST, "Missing file"));
         }
 
         try {
             dataObjectService.createObject(objectName, file);
         } catch (NoObjectFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDTO(HttpStatus.NOT_FOUND, e.getMessage()));
         } catch (IOException e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDTO(true, "Object created"));
     }
 
-    @PatchMapping("/objects/{objectName:.+}")
-    public ResponseEntity update(@PathVariable String objectName, @RequestParam("file") MultipartFile file) {
+    @PatchMapping("/objects/{objectName}")
+    public ResponseEntity<ResponseDTO> update(@PathVariable String objectName, @RequestParam("file") MultipartFile file) {
         return create(objectName, file);
     }
 
-    @DeleteMapping("/objects/{objectName:.+}")
-    public ResponseEntity delete(@PathVariable String objectName) throws NoObjectFoundException {
+    @DeleteMapping("/objects/{objectName}")
+    public ResponseEntity<ResponseDTO> delete(@PathVariable String objectName) {
+
         if (objectName.isEmpty()) {
-            return ResponseEntity.badRequest().body(new APIError(HttpStatus.BAD_REQUEST, "Missing objectName"));
+            return ResponseEntity.badRequest().body(new ErrorResponseDTO(HttpStatus.BAD_REQUEST, "Missing objectName"));
         }
 
-        dataObjectService.deleteObject(objectName);
-        return new ResponseEntity<>(HttpStatus.OK);
+        try {
+            dataObjectService.deleteObject(objectName);
+        } catch (NoObjectFoundException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponseDTO(HttpStatus.BAD_REQUEST, "No such object found"));
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDTO(true, "Object deleted"));
     }
 
-    @GetMapping("/objects/{objectName:.+}/link")
-    public ResponseEntity publish(@PathVariable String objectName) {
+    @GetMapping("/objects/{objectName}/link")
+    public ResponseEntity<?> publish(@PathVariable String objectName, @RequestParam(value = "ttl", defaultValue = "600") int ttl) {
+
         if (objectName.isEmpty()) {
-            return ResponseEntity.badRequest().body(new APIError(HttpStatus.BAD_REQUEST, "Missing objectName"));
+            return ResponseEntity.badRequest().body(new ErrorResponseDTO(HttpStatus.BAD_REQUEST, "Missing objectName"));
         }
         String url;
         try {
-            url = dataObjectService.getPublishLink(objectName);
+            url = dataObjectService.getPublishLink(objectName, Duration.ofSeconds(ttl));
         } catch (NoObjectFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return ResponseEntity.ok().body(url);
+        LocalDateTime expirationDate = LocalDateTime.now().plusSeconds(ttl);
+        return ResponseEntity.status(HttpStatus.OK).body(new LinkDTO(url, expirationDate));
     }
 }
