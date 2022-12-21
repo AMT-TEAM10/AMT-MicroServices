@@ -62,6 +62,7 @@ public interface IDataObjectHelper {
     /**
      * Delete all objects starting with prefix.
      * Because there are no folders in object storage, we use prefix to simulate folders.
+     *
      * @param folderName name of folder
      */
     void deleteFolder(String folderName) throws NoObjectFoundException;
@@ -92,6 +93,7 @@ public interface IDataObjectHelper {
     /**
      * Get all objects starting with prefix.
      * Because there are no folders in object storage, we use prefix to simulate folders.
+     *
      * @param prefix prefix of objects
      * @return list of objects name
      */

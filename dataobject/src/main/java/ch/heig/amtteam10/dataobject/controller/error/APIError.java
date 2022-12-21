@@ -6,11 +6,10 @@ import org.springframework.http.HttpStatus;
 import java.time.LocalDateTime;
 
 public class APIError {
-    @JsonFormat
-    private HttpStatus status;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private final LocalDateTime timestamp;
-
+    @JsonFormat
+    private HttpStatus status;
     @JsonFormat
     private String message;
 
