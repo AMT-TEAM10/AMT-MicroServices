@@ -101,7 +101,7 @@ public class DataObjectController {
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseDTO(true, "Object deleted"));
     }
 
-    @GetMapping("/objects/{objectName}/publish")
+    @GetMapping("/objects/{objectName}/link")
     public ResponseEntity<?> publish(@PathVariable String objectName, @RequestParam(value = "ttl", defaultValue = "600") int ttl) {
 
         if (objectName.isEmpty()) {

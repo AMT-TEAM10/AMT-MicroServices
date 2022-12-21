@@ -47,9 +47,9 @@ public class App {
         return response.getBody();
     }
 
-    private String publishObject(String objectName) throws UnirestException {
+    private JsonNode publishObject(String objectName) throws UnirestException {
         String url = DATA_OBJECT_URL + "/objects/" + objectName + "/link";
-        var response = Unirest.get(url).asString();
+        var response = Unirest.get(url).asJson();
         return response.getBody();
     }
 
@@ -59,39 +59,39 @@ public class App {
         System.out.println(bucketResult);
 
         System.out.println("Uploading object...");
-        var uplaodResult = uploadObject("mysuperimage.jpg", App.class.getClassLoader().getResourceAsStream("main.jpeg"));
-        System.out.println(uplaodResult);
+        var uploadResult = uploadObject("mysuperimage.jpg", App.class.getClassLoader().getResourceAsStream("main.jpeg"));
+        System.out.println(uploadResult);
 
         System.out.println("Publishing object...");
-        String url = publishObject("mysuperimage.jpg");
-        System.out.println(url);
+        var result = publishObject("mysuperimage.jpg").getObject().get("url");;
+        System.out.println(result);
 
         System.out.println("Analyzing image...");
-        var result = analyseImage(url, 10, 0.5f);
-        System.out.println(result);
+        var analyse = analyseImage(result.toString(), 10, 0.5f);
+        System.out.println(analyse.getObject().get("results").toString());
     }
 
     public void scenario2() throws UnirestException, JsonProcessingException {
         System.out.println("Uploading object...");
-        var uplaodResult = uploadObject("mysuperimage2.jpg", App.class.getClassLoader().getResourceAsStream("main.jpeg"));
-        System.out.println(uplaodResult);
+        var uploadResult = uploadObject("mysuperimage2.jpg", App.class.getClassLoader().getResourceAsStream("main.jpeg"));
+        System.out.println(uploadResult);
 
         System.out.println("Publishing object...");
-        String url = publishObject("mysuperimage2.jpg");
+        var url = publishObject("mysuperimage2.jpg").getObject().get("url");
         System.out.println(url);
 
         System.out.println("Analyzing image...");
-        var result = analyseImage(url, 10, 0.5f);
-        System.out.println(result);
+        var result = analyseImage(url.toString(), 10, 0.5f);
+        System.out.println(result.getObject().get("results").toString());
     }
 
     public void scenario3() throws UnirestException, JsonProcessingException {
         System.out.println("Publishing object...");
-        String url = publishObject("mysuperimage.jpg");
+        var url = publishObject("mysuperimage.jpg").getObject().get("url");
         System.out.println(url);
 
         System.out.println("Analyzing image...");
-        var result = analyseImage(url, 10, 0.5f);
-        System.out.println(result);
+        var result = analyseImage(url.toString(), 10, 0.5f);
+        System.out.println(result.getObject().get("results").toString());
     }
 }
