@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LabelDetectorService {
-  public Label[] executeLabelDetection(ProcessDTO params) throws FailDownloadFileException {
-    return AWSClient.getInstance().labelDetector().execute(params.imageUrl(), params.maxLabels(), params.minConfidence());
-  }
+    public Label[] executeLabelDetection(ProcessDTO params) throws FailDownloadFileException {
+        return AWSClient.getInstance().labelDetector().execute(params.imageUrl(), params.maxLabels(), params.minConfidence());
+    }
 }

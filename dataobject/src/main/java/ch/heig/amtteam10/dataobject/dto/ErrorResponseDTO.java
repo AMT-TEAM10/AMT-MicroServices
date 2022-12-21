@@ -33,10 +33,7 @@ class APIError {
 public class ErrorResponseDTO extends ResponseDTO {
     private final APIError error;
 
-    public ErrorResponseDTO(
-            HttpStatus status,
-            String message
-    ) {
+    public ErrorResponseDTO(HttpStatus status, String message) {
         super(false, message);
         this.error = new APIError(status, message);
     }

@@ -1,8 +1,8 @@
 package ch.heig.amtteam10.dataobject;
 
-import ch.heig.amtteam10.core.cloud.AWSClient;
-import ch.heig.amtteam10.core.cloud.AWSDataObjectHelper;
 import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
+import ch.heig.amtteam10.dataobject.core.cloud.AWSClient;
+import ch.heig.amtteam10.dataobject.core.cloud.AWSDataObjectHelper;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -25,10 +25,8 @@ class DataObjectApplicationTests {
     private static final String TEST_FILE_2_NAME = "test.png";
     private static final String OUTPUT_FILE_NAME = "output.jpeg";
     private static final String RAW_CONTENT_TEST = "test";
-
-    private static AWSClient client;
-
     private final static ClassLoader classLoader = AWSDataObjectHelper.class.getClassLoader();
+    private static AWSClient client;
 
     @BeforeAll
     public static void init() {
@@ -212,9 +210,10 @@ class DataObjectApplicationTests {
         // Then it should throw an exception
         assertThrows(NoObjectFoundException.class, () -> client.dataObject().publish(NON_EXISTING_OBJECT_KEY));
     }
+
     // publish object end
     @Nested
-    class TestWithListObject{
+    class TestWithListObject {
         static String folderName = "testFolder";
 
         static int nbObjects = 4;
@@ -230,6 +229,18 @@ class DataObjectApplicationTests {
             // create N objects
             for (String objectName : objectNames) {
                 client.dataObject().create(objectName, RAW_CONTENT_TEST.getBytes(), "text/plain");
+            }
+        }
+
+        @AfterAll
+        public static void cleanup() {
+            // delete N objects
+            for (String objectName : objectNames) {
+                try {
+                    client.dataObject().delete(objectName);
+                } catch (Exception e) {
+                    // do nothing
+                }
             }
         }
 
@@ -261,18 +272,6 @@ class DataObjectApplicationTests {
             // When I try to delete it
             // Then it should throw an exception
             assertThrows(NoObjectFoundException.class, () -> client.dataObject().deleteFolder("thisFolderDoesNotExist"));
-        }
-
-        @AfterAll
-        public static void cleanup() {
-            // delete N objects
-            for (String objectName : objectNames) {
-                try{
-                    client.dataObject().delete(objectName);
-                } catch (Exception e) {
-                    // do nothing
-                }
-            }
         }
     }
 

@@ -1,4 +1,4 @@
-package ch.heig.amtteam10.core.cloud;
+package ch.heig.amtteam10.dataobject.core.cloud;
 
 import ch.heig.amtteam10.core.exceptions.BucketAlreadyCreatedException;
 import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
