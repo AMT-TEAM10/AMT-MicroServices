@@ -1,4 +1,4 @@
-package ch.heig.amtteam10.core.cloud;
+package ch.heig.amtteam10.dataobject.core.cloud;
 
 import ch.heig.amtteam10.core.Env;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -14,8 +14,8 @@ import software.amazon.awssdk.services.s3.S3Client;
  * @author Maxime Scharwath
  */
 public class AWSClient implements ICloudClient {
-    private final AWSDataObjectHelper dataObjectHelper;
     private static AWSClient instance;
+    private final AWSDataObjectHelper dataObjectHelper;
     private final Region region;
     private final S3Client s3Client;
     private final AwsCredentialsProvider credentialsProvider;

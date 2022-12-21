@@ -1,4 +1,4 @@
-package ch.heig.amtteam10.core.cloud;
+package ch.heig.amtteam10.dataobject.core.cloud;
 
 import ch.heig.amtteam10.core.exceptions.BucketAlreadyCreatedException;
 import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
@@ -41,7 +41,6 @@ public interface IDataObjectHelper {
      * Create object (string) on an object storage manager
      *
      * @param objectName name of object
-     * @param rawContent content to upload
      */
     void create(String objectName, byte[] bytes);
 
@@ -63,6 +62,7 @@ public interface IDataObjectHelper {
     /**
      * Delete all objects starting with prefix.
      * Because there are no folders in object storage, we use prefix to simulate folders.
+     *
      * @param folderName name of folder
      */
     void deleteFolder(String folderName) throws NoObjectFoundException;
@@ -93,6 +93,7 @@ public interface IDataObjectHelper {
     /**
      * Get all objects starting with prefix.
      * Because there are no folders in object storage, we use prefix to simulate folders.
+     *
      * @param prefix prefix of objects
      * @return list of objects name
      */

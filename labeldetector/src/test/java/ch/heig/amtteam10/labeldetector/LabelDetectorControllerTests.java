@@ -1,7 +1,7 @@
 package ch.heig.amtteam10.labeldetector;
 
-import ch.heig.amtteam10.labeldetector.controller.LabelDetectorController;
 import ch.heig.amtteam10.labeldetector.DTO.ProcessDTO;
+import ch.heig.amtteam10.labeldetector.controller.LabelDetectorController;
 import ch.heig.amtteam10.labeldetector.service.LabelDetectorService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

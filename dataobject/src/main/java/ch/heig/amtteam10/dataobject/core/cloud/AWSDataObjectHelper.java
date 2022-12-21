@@ -1,4 +1,4 @@
-package ch.heig.amtteam10.core.cloud;
+package ch.heig.amtteam10.dataobject.core.cloud;
 
 import ch.heig.amtteam10.core.Env;
 import ch.heig.amtteam10.core.exceptions.BucketAlreadyCreatedException;
@@ -91,7 +91,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
     }
 
     @Override
-    public void create(String objectName,  byte[] bytes) {
+    public void create(String objectName, byte[] bytes) {
         if (!doesRootObjectExists(Env.get("AWS_BUCKET_NAME"))) {
             throw new RuntimeException("Bucket not found");
         }
@@ -134,7 +134,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
     }
 
     @Override
-    public List<String> listObjects(String prefix){
+    public List<String> listObjects(String prefix) {
         ListObjectsRequest listObjectsRequest = ListObjectsRequest.builder()
                 .bucket(Env.get("AWS_BUCKET_NAME"))
                 .prefix(prefix)

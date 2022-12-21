@@ -8,15 +8,19 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 import java.io.InputStream;
 
-/**
- * Hello world!
- *
- */
-public class App
-{
-
+public class App {
     private static final String LABEL_DETECTOR_URL = "http://localhost:8080";
     private static final String DATA_OBJECT_URL = "http://localhost:8081";
+
+    public static void main(String[] args) throws JsonProcessingException, UnirestException {
+        App app = new App();
+        System.out.println("Scenario 1");
+        app.scenario1();
+        System.out.println("Scenario 2");
+        app.scenario2();
+        System.out.println("Scenario 3");
+        app.scenario3();
+    }
 
     private JsonNode analyseImage(String imageUrl, int maxLabels, float minConfidence) throws UnirestException, JsonProcessingException {
         String url = LABEL_DETECTOR_URL + "/process";
@@ -43,13 +47,10 @@ public class App
     }
 
     private String publishObject(String objectName) throws UnirestException {
-        String url = DATA_OBJECT_URL + "/object/" + objectName + "/publish";
+        String url = DATA_OBJECT_URL + "/object/" + objectName + "/link";
         var response = Unirest.get(url).asString();
         return response.getBody();
     }
-
-
-
 
     public void scenario1() throws UnirestException, JsonProcessingException {
         System.out.println("Creating bucket...");
@@ -83,8 +84,6 @@ public class App
         System.out.println(result);
     }
 
-
-
     public void scenario3() throws UnirestException, JsonProcessingException {
         System.out.println("Publishing object...");
         String url = publishObject("mysuperimage.jpg");
@@ -93,19 +92,5 @@ public class App
         System.out.println("Analyzing image...");
         var result = analyseImage(url, 10, 0.5f);
         System.out.println(result);
-    }
-
-
-
-
-
-    public static void main( String[] args ) throws JsonProcessingException, UnirestException {
-        App app = new App();
-        System.out.println("Scenario 1");
-        app.scenario1();
-        System.out.println("Scenario 2");
-        app.scenario2();
-        System.out.println("Scenario 3");
-        app.scenario3();
     }
 }
