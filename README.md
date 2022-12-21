@@ -104,3 +104,5 @@ LabelDetector: [Documentation API](./labeldetector/README.md)
 # Docker
 
 TODO expliquer ce qu'on a fait avec Docker
+
+https://hub.docker.com/u/nicrausaz

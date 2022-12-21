@@ -1,46 +1,87 @@
 # Label Detector
 
-> A simple tool to detect labels in images
+## Utilisation de l'API
 
-## API Usage
-
-### Process an image
+### Labellisation d'une image
 
 > POST /v1/labels
 
-#### Request body as Content-Type: application/json
+#### Requête Content-Type: application/json
 
 ```json
 {
-  "imageUrl": "https://www.example.com/image.jpg",
+  "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9d/NYC_Montage_2014_4_-_Jleon.jpg",
   "maxLabels": 10,
   "minConfidence": 0.5
 }
 ```
 
-#### Response body as Content-Type: application/json
+#### Contenu de la réponse Content-Type: application/json
 
-The response is an array of Labels:
+La réponse contient :
+- count: nombre de labels retournés
+- sourceUrl: url de l'image analysée
+- results: tableau de labels identifiés dans l'image
 
 ```json
-[
-  {
-    "name": "label name",
-    "confidence": 0.9
-  }
-]
+{
+  "count": 10,
+  "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9d/NYC_Montage_2014_4_-_Jleon.jpg",
+  "results": [
+    {
+      "name": "City",
+      "confidence": 1.0
+    },
+    {
+      "name": "Metropolis",
+      "confidence": 1.0
+    },
+    {
+      "name": "Urban",
+      "confidence": 1.0
+    },
+    {
+      "name": "Art",
+      "confidence": 0.9997783
+    },
+    {
+      "name": "Collage",
+      "confidence": 0.9997059
+    },
+    {
+      "name": "High Rise",
+      "confidence": 0.99822485
+    },
+    {
+      "name": "Building",
+      "confidence": 0.99822485
+    },
+    {
+      "name": "Office Building",
+      "confidence": 0.99667853
+    },
+    {
+      "name": "Person",
+      "confidence": 0.960994
+    },
+    {
+      "name": "Arch",
+      "confidence": 0.71438813
+    }
+  ]
+}
 ```
 
-#### CURL example
+#### CURL exemple
 
-Here is an example of a CURL request:
+Exemple curl
 
 ```bash
-curl --location --request POST 'localhost:8080/process' \
+curl --location --request POST 'http://localhost:8080/v1/labels' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "imageUrl": "https://www.rts.ch/2018/07/15/11/28/9715654.image",
-    "maxLabels": 500,
-    "minConfidence": 0.5
+  "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9d/NYC_Montage_2014_4_-_Jleon.jpg",
+  "maxLabels": 10,
+  "minConfidence": 0.5
 }'
 ```

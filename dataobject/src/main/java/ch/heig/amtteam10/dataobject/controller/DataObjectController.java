@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-// TODO: objectName in query for paths
-
 @RestController
 @RequestMapping("v1")
 public class DataObjectController {
