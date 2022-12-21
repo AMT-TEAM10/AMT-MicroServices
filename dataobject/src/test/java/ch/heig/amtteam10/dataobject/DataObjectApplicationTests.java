@@ -1,6 +1,6 @@
 package ch.heig.amtteam10.dataobject;
 
-import ch.heig.amtteam10.core.exceptions.NoObjectFoundException;
+import ch.heig.amtteam10.dataobject.core.exceptions.NoObjectFoundException;
 import ch.heig.amtteam10.dataobject.core.cloud.AWSClient;
 import ch.heig.amtteam10.dataobject.core.cloud.AWSDataObjectHelper;
 import org.junit.jupiter.api.*;
