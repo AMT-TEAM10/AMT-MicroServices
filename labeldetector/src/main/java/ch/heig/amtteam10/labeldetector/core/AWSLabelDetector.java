@@ -1,7 +1,11 @@
 package ch.heig.amtteam10.labeldetector.core;
 
 import ch.heig.amtteam10.labeldetector.core.exceptions.FailDownloadFileException;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.rekognition.RekognitionClient;
 import software.amazon.awssdk.services.rekognition.model.DetectLabelsRequest;
 import software.amazon.awssdk.services.rekognition.model.DetectLabelsResponse;
 import software.amazon.awssdk.services.rekognition.model.Image;
@@ -19,7 +23,21 @@ import java.nio.ByteBuffer;
  * @author Nicolas Crausaz
  * @author Maxime Scharwath
  */
-public class AWSLabelDetectorHelper implements ILabelDetector {
+public class AWSLabelDetector implements ILabelDetector {
+    private final RekognitionClient client;
+
+    public AWSLabelDetector(){
+        Region region = Region.of(Env.get("AWS_REGION"));
+        StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider
+                .create(AwsBasicCredentials
+                        .create(
+                                Env.get("AWS_ACCESS_KEY_ID"),
+                                Env.get("AWS_SECRET_ACCESS_KEY"
+                                )
+                        ));
+        this.client = RekognitionClient.builder().region(region).credentialsProvider(credentialsProvider).build();
+    }
+
     @Override
     public Label[] execute(String imageUri, int maxLabels, float minConfidence) throws FailDownloadFileException {
         SdkBytes sourceBytes = SdkBytes.fromInputStream(downloadImage(imageUri));
@@ -56,7 +74,7 @@ public class AWSLabelDetectorHelper implements ILabelDetector {
                 .minConfidence(minConfidence * 100f)
                 .build();
 
-        DetectLabelsResponse labelsResponse = AWSClient.getInstance().getRekognitionClient().detectLabels(detectLabelsRequest);
+        DetectLabelsResponse labelsResponse = client.detectLabels(detectLabelsRequest);
         var awsLabels = labelsResponse.labels();
 
         Label[] result = new Label[awsLabels.size()];

@@ -1,10 +1,14 @@
-package ch.heig.amtteam10.dataobject.core.cloud;
+package ch.heig.amtteam10.dataobject.core;
 
 import ch.heig.amtteam10.core.Env;
 import ch.heig.amtteam10.dataobject.core.exceptions.BucketAlreadyCreatedException;
 import ch.heig.amtteam10.dataobject.core.exceptions.NoObjectFoundException;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
@@ -23,16 +27,29 @@ import java.util.logging.Logger;
  * @author Nicolas Crausaz
  * @author Maxime Scharwath
  */
-public class AWSDataObjectHelper implements IDataObjectHelper {
+public class AWSDataObject implements IDataObject {
     private final static int PUBLIC_LINK_VALIDITY_DURATION = Integer.parseInt(Env.get("PUBLIC_LINK_VALIDITY_DURATION"));
+    private final Region region;
+    private final StaticCredentialsProvider credentialsProvider;
+    private final S3Client client;
+
+    public AWSDataObject() {
+        this.region = Region.of(Env.get("AWS_REGION"));
+        this.credentialsProvider = StaticCredentialsProvider
+                .create(AwsBasicCredentials
+                        .create(
+                                Env.get("AWS_ACCESS_KEY_ID"),
+                                Env.get("AWS_SECRET_ACCESS_KEY"
+                                )
+                        ));
+        this.client = S3Client.builder().region(region).credentialsProvider(this.credentialsProvider).build();
+    }
 
     @Override
     public void createRootObject(String bucketName) throws BucketAlreadyCreatedException {
-        AWSClient client = AWSClient.getInstance();
-
         try {
             CreateBucketRequest req = CreateBucketRequest.builder().bucket(bucketName).build();
-            client.getS3Client().createBucket(req);
+            client.createBucket(req);
         } catch (BucketAlreadyExistsException | BucketAlreadyOwnedByYouException e) {
             throw new BucketAlreadyCreatedException(bucketName);
         }
@@ -41,13 +58,12 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
     @Override
     public boolean doesRootObjectExists(String bucketName) {
         try {
-            AWSClient.getInstance().getS3Client()
-                    .headBucket(HeadBucketRequest.builder()
-                            .bucket(bucketName)
-                            .build());
+            client.headBucket(HeadBucketRequest.builder()
+                    .bucket(bucketName)
+                    .build());
             return true;
         } catch (NoSuchBucketException e) {
-            Logger.getLogger(AWSDataObjectHelper.class.getName()).log(Level.WARNING, e.getMessage());
+            Logger.getLogger(AWSDataObject.class.getName()).log(Level.WARNING, e.getMessage());
             return false;
         }
     }
@@ -71,7 +87,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
         ResponseBytes<GetObjectResponse> result;
 
         try {
-            result = AWSClient.getInstance().getS3Client().getObjectAsBytes(objectRequestGet);
+            result = client.getObjectAsBytes(objectRequestGet);
         } catch (NoSuchKeyException e) {
             throw new NoObjectFoundException(objectName);
         }
@@ -92,7 +108,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
                 .bucket(Env.get("AWS_BUCKET_NAME"))
                 .key(objectName)
                 .build();
-        HeadObjectResponse headObjectResponse = AWSClient.getInstance().getS3Client().headObject(headObjectRequest);
+        HeadObjectResponse headObjectResponse = client.headObject(headObjectRequest);
         return headObjectResponse.contentType();
     }
 
@@ -107,7 +123,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
                 .key(objectName)
                 .contentType(URLConnection.guessContentTypeFromName(file.getName()))
                 .build();
-        AWSClient.getInstance().getS3Client().putObject(objectRequest, RequestBody.fromFile(file));
+        client.putObject(objectRequest, RequestBody.fromFile(file));
     }
 
     @Override
@@ -121,7 +137,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
                 .key(objectName)
                 .contentType(contentType)
                 .build();
-        AWSClient.getInstance().getS3Client().putObject(objectRequest, RequestBody.fromBytes(bytes));
+        client.putObject(objectRequest, RequestBody.fromBytes(bytes));
     }
 
     @Override
@@ -139,7 +155,7 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
                 .key(objectName)
                 .build();
 
-        AWSClient.getInstance().getS3Client().deleteObject(request);
+        client.deleteObject(request);
     }
 
     @Override
@@ -155,13 +171,13 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
     }
 
     @Override
-    public List<String> listObjects(String prefix){
+    public List<String> listObjects(String prefix) {
         ListObjectsRequest listObjectsRequest = ListObjectsRequest.builder()
                 .bucket(Env.get("AWS_BUCKET_NAME"))
                 .prefix(prefix)
                 .build();
 
-        ListObjectsResponse listObjectsResponse = AWSClient.getInstance().getS3Client().listObjects(listObjectsRequest);
+        ListObjectsResponse listObjectsResponse = client.listObjects(listObjectsRequest);
         return listObjectsResponse.contents().stream().map(S3Object::key).toList();
     }
 
@@ -172,8 +188,8 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
         }
 
         S3Presigner presigner = S3Presigner.builder()
-                .region(AWSClient.getInstance().getRegion())
-                .credentialsProvider(AWSClient.getInstance().getCredentials())
+                .region(region)
+                .credentialsProvider(credentialsProvider)
                 .build();
 
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
@@ -195,18 +211,17 @@ public class AWSDataObjectHelper implements IDataObjectHelper {
         return publish(objectName, Duration.ofMinutes(PUBLIC_LINK_VALIDITY_DURATION));
     }
 
-
     @Override
     public boolean doesObjectExists(String objectName) {
         try {
-            AWSClient.getInstance().getS3Client()
+            client
                     .headObject(HeadObjectRequest.builder()
                             .bucket(Env.get("AWS_BUCKET_NAME"))
                             .key(objectName)
                             .build());
             return true;
         } catch (NoSuchKeyException e) {
-            Logger.getLogger(AWSDataObjectHelper.class.getName()).log(Level.WARNING, e.getMessage());
+            Logger.getLogger(AWSDataObject.class.getName()).log(Level.WARNING, e.getMessage());
             return false;
         }
     }
