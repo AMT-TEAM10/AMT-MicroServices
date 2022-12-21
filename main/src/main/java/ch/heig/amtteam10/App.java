@@ -60,14 +60,14 @@ public class App {
     }
 
     private JsonNode createBucket() throws UnirestException {
-        String url = DATA_OBJECT_URL + "/root-objects";
+        String url = DATA_OBJECT_URL + "/v1/root-objects";
         var response = Unirest.post(url)
                 .asJson();
         return response.getBody();
     }
 
     private JsonNode uploadObject(String objectName, InputStream stream) throws UnirestException {
-        String url = DATA_OBJECT_URL + "/objects/" + objectName;
+        String url = DATA_OBJECT_URL + "/v1/objects/" + objectName;
         var response = Unirest.post(url)
                 .field("file", stream, objectName)
                 .asJson();
@@ -75,7 +75,7 @@ public class App {
     }
 
     private JsonNode uploadJson(String objectName, String json) throws UnirestException {
-        String url = DATA_OBJECT_URL + "/objects/" + objectName;
+        String url = DATA_OBJECT_URL + "/v1/objects/" + objectName;
         var response = Unirest.post(url)
                 .header("Content-Type", "application/json")
                 .body(json)
@@ -84,7 +84,7 @@ public class App {
     }
 
     private JsonNode publishObject(String objectName) throws UnirestException {
-        String url = DATA_OBJECT_URL + "/objects/" + objectName + "/link";
+        String url = DATA_OBJECT_URL + "/v1/objects/" + objectName + "/link";
         var response = Unirest.get(url).asJson();
         return response.getBody();
     }
