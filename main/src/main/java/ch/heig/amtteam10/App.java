@@ -114,7 +114,7 @@ public class App {
         System.out.println(uploadResult2);
 
         System.out.println("Publishing result...");
-        var result2 = publishObject(objectName+".json").getObject().get("url");;
+        var result2 = publishObject(objectName+".json").getObject().get("url");
         System.out.println(result2);
     }
 
@@ -139,7 +139,7 @@ public class App {
         System.out.println(uploadResult2);
 
         System.out.println("Publishing result...");
-        var result2 = publishObject(objectName+".json").getObject().get("url");;
+        var result2 = publishObject(objectName+".json").getObject().get("url");
         System.out.println(result2);
     }
 
@@ -160,7 +160,7 @@ public class App {
         System.out.println(uploadResult2);
 
         System.out.println("Publishing result...");
-        var result2 = publishObject(objectName+".json").getObject().get("url");;
+        var result2 = publishObject(objectName+".json").getObject().get("url");
         System.out.println(result2);
     }
 }
