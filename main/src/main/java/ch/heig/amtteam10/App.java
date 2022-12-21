@@ -9,6 +9,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 /**
@@ -50,7 +51,7 @@ public class App {
     }
 
     private JsonNode analyseImage(String imageUrl, int maxLabels, float minConfidence) throws UnirestException, JsonProcessingException {
-        String url = LABEL_DETECTOR_URL + "/labels";
+        String url = LABEL_DETECTOR_URL + "/v1/labels";
         String body = new ObjectMapper().writeValueAsString(new ProcessDTO(imageUrl, maxLabels, minConfidence));
         var response = Unirest.post(url)
                 .header("Content-Type", "application/json")
@@ -77,8 +78,7 @@ public class App {
     private JsonNode uploadJson(String objectName, String json) throws UnirestException {
         String url = DATA_OBJECT_URL + "/v1/objects/" + objectName;
         var response = Unirest.post(url)
-                .header("Content-Type", "application/json")
-                .body(json)
+                .field("file", new ByteArrayInputStream(json.getBytes()), objectName)
                 .asJson();
         return response.getBody();
     }
@@ -100,15 +100,17 @@ public class App {
         System.out.println(uploadResult);
 
         System.out.println("Publishing object...");
-        var result = publishObject(objectName+".jpg").getObject().get("url");;
+        var result = publishObject(objectName+".jpg");
+        String url = result.getObject().get("url").toString();
         System.out.println(result);
 
         System.out.println("Analyzing image...");
-        var analyse = analyseImage(result.toString(), 10, 0.5f);
+        var analyse = analyseImage(url, 10, 0.5f);
         System.out.println(analyse.getObject().get("results").toString());
 
         System.out.println("Uploading result...");
         var uploadResult2 = uploadJson(objectName+".json", analyse.getObject().get("results").toString());
+        System.out.println(analyse);
         System.out.println(uploadResult2);
 
         System.out.println("Publishing result...");
@@ -124,11 +126,12 @@ public class App {
         System.out.println(uploadResult);
 
         System.out.println("Publishing object...");
-        var result = publishObject(objectName+".jpg").getObject().get("url");;
+        var result = publishObject(objectName+".jpg");
+        String url = result.getObject().get("url").toString();
         System.out.println(result);
 
         System.out.println("Analyzing image...");
-        var analyse = analyseImage(result.toString(), 10, 0.5f);
+        var analyse = analyseImage(url, 10, 0.5f);
         System.out.println(analyse.getObject().get("results").toString());
 
         System.out.println("Uploading result...");
@@ -144,11 +147,12 @@ public class App {
         var objectName = "scenario3";
 
         System.out.println("Publishing object...");
-        var result = publishObject(objectName+".jpg").getObject().get("url");;
+        var result = publishObject("scenario2.jpg");
+        String url = result.getObject().get("url").toString();
         System.out.println(result);
 
         System.out.println("Analyzing image...");
-        var analyse = analyseImage(result.toString(), 10, 0.5f);
+        var analyse = analyseImage(url, 10, 0.5f);
         System.out.println(analyse.getObject().get("results").toString());
 
         System.out.println("Uploading result...");
