@@ -37,7 +37,7 @@ class LabelDetectorControllerTests {
 
         //THEN Got a success response.
         assertEquals(response.getStatusCode(), HttpStatusCode.valueOf(200));
-        assertEquals(Objects.requireNonNull(response.getBody()).length, 5);
+        assertEquals(Objects.requireNonNull(response.getBody()).count(), 5);
     }
 
     @Test
