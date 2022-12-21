@@ -103,4 +103,30 @@ LabelDetector: [Documentation API](./labeldetector/README.md)
 
 # Docker
 
-TODO expliquer ce qu'on a fait avec Docker
+Nous avons créé une image Docker pour chacun des microservices:
+
+[Dockerfile DataObject](./dataobject/Dockerfile)
+[Dockerfile LabelRekognition](./labeldetector/Dockerfile)
+
+Les deux images sont automatiquement publiées dans le registry DockerHub lors d'un succès de la pipeline CI/CD,
+si les tests passent. Les images sont disponibles [ici](https://hub.docker.com/u/nicrausaz)
+
+Nous avons également créé un Docker-Compose qui permet de démarrer rapidement les deux micro-services afin de les tester
+avec le "main". Pour l'exécuter il faut éditer le fichier [docker-compose.yml](./main/docker/docker-compose.yml) pour y 
+spécifier les secrets nécessaires (remplacer les valeurs `${{ REPLACE }}`), puis il suffit de lancer la commande:
+
+```bash
+$ cd docs/docker
+$ docker-compose up
+$ java -jar main.jar
+```
+
+# UML des microservices
+
+## Data Object
+![UML DataObject](./docs/UML-dataobject.png)
+
+## Label Detector
+![UML LabelDetector](./docs/UML-labeldetector.png)
+
+
