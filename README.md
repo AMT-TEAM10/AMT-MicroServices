@@ -11,7 +11,7 @@ Pour utiliser cette application, il nécessaire d'avoir installé sur votre mach
 - Java 18
 - Maven 3.8
 
-Voir [Wiki](https://github.com/AMT-TEAM10/AMT-Rekognition/wiki/D%C3%A9pendances) pour plus d'informations.
+Voir [Wiki](https://github.com/AMT-TEAM10/AMT-MicroServices/wiki/D%C3%A9pendances) pour plus d'informations.
 
 Vous devez également avoir à disposition : un Bucket AWS S3, ainsi que les clés d'accès publiques et privées y permettant l'accès.
 
@@ -40,7 +40,7 @@ PUBLIC_LINK_VALIDITY_DURATION= durée de validité du lien public (en minutes)
 
 ### Installation des dépendances
 
-Les dépendances détaillées du projet se trouvent [ici](https://github.com/AMT-TEAM10/AMT-Rekognition/wiki/D%C3%A9pendances).
+Les dépendances détaillées du projet se trouvent [ici](https://github.com/AMT-TEAM10/AMT-MicroServices/wiki/D%C3%A9pendances).
 
 Pour installer les dépendances, entrer la commande suivante :
 
@@ -74,7 +74,7 @@ L'application s'exécutera dans un container, et son résultat sera affiché en 
 
 Pour changer les credentials / variables d'env. sur l'environnement de production, il faut éditer les valeurs dans le fichier `app/docker-compose.yml`.
 
-Des explications plus détaillées sont disponible dans le [Wiki](https://github.com/AMT-TEAM10/AMT-Rekognition/wiki/Configuration,-d%C3%A9ploiement-et-production)
+Des explications plus détaillées sont disponible dans le [Wiki](https://github.com/AMT-TEAM10/AMT-MicroServices/wiki/Configuration,-d%C3%A9ploiement-et-production)
 
 # Tests
 
@@ -92,7 +92,7 @@ $ mvn test -Dtest="testName"
 
 # Directives
 
-Toute documentation relative aux practices, dépendances, architecture se trouvent dans notre [Wiki](https://github.com/AMT-TEAM10/AMT-Rekognition/wiki).
+Toute documentation relative aux practices, dépendances, architecture se trouvent dans notre [Wiki](https://github.com/AMT-TEAM10/AMT-MicroServices/wiki).
 
 # API des microservices
 
