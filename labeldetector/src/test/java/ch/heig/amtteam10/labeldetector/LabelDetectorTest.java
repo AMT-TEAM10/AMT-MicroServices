@@ -1,7 +1,6 @@
 package ch.heig.amtteam10.labeldetector;
 
-import ch.heig.amtteam10.labeldetector.core.AWSClient;
-import ch.heig.amtteam10.labeldetector.core.ICloudClient;
+import ch.heig.amtteam10.labeldetector.core.AWSLabelDetector;
 import ch.heig.amtteam10.labeldetector.core.ILabelDetector;
 import ch.heig.amtteam10.labeldetector.core.Label;
 import ch.heig.amtteam10.labeldetector.core.exceptions.FailDownloadFileException;
@@ -18,13 +17,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class LabelDetectorTest {
 
-    private static ICloudClient client;
     private static ILabelDetector detector;
 
     @BeforeAll
     public static void init() {
-        client = AWSClient.getInstance();
-        detector = client.labelDetector();
+        detector = new AWSLabelDetector();
     }
 
     @Test
@@ -33,7 +30,7 @@ public class LabelDetectorTest {
     }
 
     @Test
-    public void shouldDetectLabelsFromURLString() throws FailDownloadFileException, IOException {
+    public void shouldDetectLabelsFromURLString() throws FailDownloadFileException {
         // Given a valid URL string
         String exampleUrl = "https://upload.wikimedia.org/wikipedia/commons/9/9d/NYC_Montage_2014_4_-_Jleon.jpg";
 
@@ -70,6 +67,7 @@ public class LabelDetectorTest {
         ClassLoader classLoader = getClass().getClassLoader();
 
         try (InputStream inputStream = classLoader.getResourceAsStream("main.jpeg")) {
+            assert inputStream != null;
             imageBytes = ByteBuffer.wrap(IOUtils.toByteArray(inputStream));
         }
 
