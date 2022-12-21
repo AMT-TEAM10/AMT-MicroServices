@@ -1,4 +1,4 @@
-package ch.heig.amtteam10.labeldetector;
+package ch.heig.amtteam10.labeldetector.core;
 
 import io.github.cdimascio.dotenv.Dotenv;
 

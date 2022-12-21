@@ -1,6 +1,6 @@
 package ch.heig.amtteam10.labeldetector.controller;
 
-import ch.heig.amtteam10.labeldetector.DTO.ProcessDTO;
+import ch.heig.amtteam10.labeldetector.dto.ProcessDTO;
 import ch.heig.amtteam10.labeldetector.core.Label;
 import ch.heig.amtteam10.labeldetector.core.exceptions.FailDownloadFileException;
 import ch.heig.amtteam10.labeldetector.dto.LabelResultDTO;

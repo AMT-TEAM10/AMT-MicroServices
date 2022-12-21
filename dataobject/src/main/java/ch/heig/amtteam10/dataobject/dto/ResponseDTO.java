@@ -1,8 +1,8 @@
 package ch.heig.amtteam10.dataobject.dto;
 
 public class ResponseDTO {
-    private final boolean success;
-    private final String message;
+    private boolean success;
+    private String message;
 
     public ResponseDTO(
             boolean success,
@@ -12,11 +12,11 @@ public class ResponseDTO {
         this.message = message;
     }
 
-    public boolean success() {
+    public boolean getSuccess() {
         return success;
     }
 
-    public String message() {
+    public String getMessage() {
         return message;
     }
 }

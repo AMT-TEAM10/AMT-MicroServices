@@ -9,8 +9,8 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.InputStream;
 
 public class App {
-    private static final String LABEL_DETECTOR_URL = "http://localhost:8080";
-    private static final String DATA_OBJECT_URL = "http://localhost:8081";
+    private static final String LABEL_DETECTOR_URL = "http://localhost:8080/v1";
+    private static final String DATA_OBJECT_URL = "http://localhost:8081/v1";
 
     public static void main(String[] args) throws JsonProcessingException, UnirestException {
         App app = new App();
@@ -23,7 +23,7 @@ public class App {
     }
 
     private JsonNode analyseImage(String imageUrl, int maxLabels, float minConfidence) throws UnirestException, JsonProcessingException {
-        String url = LABEL_DETECTOR_URL + "/process";
+        String url = LABEL_DETECTOR_URL + "/labels";
         String body = new ObjectMapper().writeValueAsString(new ProcessDTO(imageUrl, maxLabels, minConfidence));
         var response = Unirest.post(url)
                 .header("Content-Type", "application/json")
@@ -33,13 +33,14 @@ public class App {
     }
 
     private JsonNode createBucket() throws UnirestException {
-        String url = DATA_OBJECT_URL + "/root-object";
-        var response = Unirest.post(url).asJson();
+        String url = DATA_OBJECT_URL + "/root-objects";
+        var response = Unirest.post(url)
+                .asJson();
         return response.getBody();
     }
 
     private JsonNode uploadObject(String objectName, InputStream stream) throws UnirestException {
-        String url = DATA_OBJECT_URL + "/object/" + objectName;
+        String url = DATA_OBJECT_URL + "/objects/" + objectName;
         var response = Unirest.post(url)
                 .field("file", stream, objectName)
                 .asJson();
@@ -47,7 +48,7 @@ public class App {
     }
 
     private String publishObject(String objectName) throws UnirestException {
-        String url = DATA_OBJECT_URL + "/object/" + objectName + "/link";
+        String url = DATA_OBJECT_URL + "/objects/" + objectName + "/link";
         var response = Unirest.get(url).asString();
         return response.getBody();
     }

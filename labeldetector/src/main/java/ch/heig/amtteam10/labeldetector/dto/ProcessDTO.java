@@ -1,4 +1,4 @@
-package ch.heig.amtteam10.labeldetector.DTO;
+package ch.heig.amtteam10.labeldetector.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

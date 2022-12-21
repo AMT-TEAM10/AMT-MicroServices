@@ -116,11 +116,4 @@ public class DataObjectController {
         LocalDateTime expirationDate = LocalDateTime.now().plusSeconds(ttl);
         return ResponseEntity.status(HttpStatus.OK).body(new LinkDTO(url, expirationDate));
     }
-
-//    private String extractPath(HttpServletRequest request) {
-//        return new AntPathMatcher().extractPathWithinPattern(
-//                request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(),
-//                request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE).toString()
-//        );
-//    }
 }
