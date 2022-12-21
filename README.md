@@ -113,8 +113,20 @@ si les tests passent. Les images sont disponibles [ici](https://hub.docker.com/u
 
 Nous avons également créé un Docker-Compose qui permet de démarrer rapidement les deux micro-services afin de les tester
 avec le "main". Pour l'exécuter il faut éditer le fichier [docker-compose.yml](./main/docker/docker-compose.yml) pour y 
-spécifier les secrets nécessaires (remplacer les valeurs `${{ secrets.ABC }}`), puis il suffit de lancer la commande:
+spécifier les secrets nécessaires (remplacer les valeurs `${{ REPLACE }}`), puis il suffit de lancer la commande:
+
 ```bash
-$ cd main/docker
+$ cd docs/docker
 $ docker-compose up
+$ java -jar main.jar
 ```
+
+# UML des microservices
+
+## Data Object
+![UML DataObject](./docs/UML-dataobject.png)
+
+## Label Detector
+![UML LabelDetector](./docs/UML-labeldetector.png)
+
+
