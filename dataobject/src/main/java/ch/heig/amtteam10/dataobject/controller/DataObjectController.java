@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-// TODO: delete bucket
 // TODO: objectName in query for paths
 
 @RestController
@@ -35,13 +34,6 @@ public class DataObjectController {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDTO(false, "Root object already exists"));
     }
-
-    @DeleteMapping("/root-objects/{objectName}")
-    public ResponseEntity<?> deleteRootObject(@PathVariable String objectName) {
-        // TODO
-        return null;
-    }
-
 
     @GetMapping("/objects/{objectName}")
     public ResponseEntity<?> index(@PathVariable String objectName) {
