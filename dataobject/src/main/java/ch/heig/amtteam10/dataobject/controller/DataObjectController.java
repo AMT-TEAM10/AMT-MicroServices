@@ -28,6 +28,7 @@ public class DataObjectController {
     @PostMapping("/root-objects")
     public ResponseEntity<ResponseDTO> createRootObject() {
         if (dataObjectService.createRootObject()) {
+            // TODO 201 Created
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseDTO(true, "Root object created"));
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDTO(false, "Root object already exists"));
@@ -58,6 +59,8 @@ public class DataObjectController {
                 .body(resource);
     }
 
+    // TODO devrait être un PUT pas un POST, un simple post retournerait un Conflict
+    // si l'objet existe déjà (et donc pas de création) alors que vous overridez
     @PostMapping("/objects/{objectName}")
     public ResponseEntity<ResponseDTO> create(@PathVariable String objectName, @RequestParam("file") MultipartFile file) {
         if (objectName.isEmpty()) {
@@ -78,6 +81,8 @@ public class DataObjectController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDTO(true, "Object created"));
     }
 
+    // pas pénalisé mais en gros vous appelez le create pour faire un update, c'est
+    // pas très propre, surtout que votre create devrait être un PUT
     @PatchMapping("/objects/{objectName}")
     public ResponseEntity<ResponseDTO> update(@PathVariable String objectName, @RequestParam("file") MultipartFile file) {
         return create(objectName, file);
@@ -93,7 +98,8 @@ public class DataObjectController {
         try {
             dataObjectService.deleteObject(objectName);
         } catch (NoObjectFoundException e) {
-            return ResponseEntity.badRequest().body(new ErrorResponseDTO(HttpStatus.BAD_REQUEST, "No such object found"));
+            // TODO devrait être un 404 not found plutôt qu'un 400 bad request en plus vous
+            // le faites juste dans le create !
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseDTO(true, "Object deleted"));
